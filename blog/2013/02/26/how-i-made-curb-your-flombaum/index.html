@@ -9,8 +9,7 @@
   <meta name="author" content="Andrew Callahan">
 
   
-  <meta name="description" content="
-">
+  <meta name="description" content="How I made Curb Your Flombaum I&#8217;ve been at the flatiron school for about 3 weeks now. I&#8217;ve been learning so much - it&#8217;s really &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -91,7 +90,69 @@
   </header>
 
 
-<div class="entry-content">
+<div class="entry-content"><p>How I made Curb Your Flombaum</p>
+
+<p>I&#8217;ve been at the flatiron school for about 3 weeks now. I&#8217;ve been learning so much - it&#8217;s really incredible how much progress I&#8217;ve been able to make in such a short period of time. This is in no small part due to the ability of Avi and Bob to both engage is in lectures and help us one-on-one when we get stuck. Part of being engaging in lectures though, has lead to some rather interesting things being said. Last semester the class started a blog to keep track of such utterances. I&#8217;m proud to say our semester has not only kept up this tradition, but in just three weeks already surpassed the last class in terms of the number of blog posts!</p>
+
+<p>When I was asked to present to NYC on Rails, I knew that I was limited in my knowledge of programming, and had limited time to prepare since I was spending all day in class and all night studying and doing homework. I was supposed to find a topic, research it, and make a presentation. However I was determined to build something, no matter how small. On the first day of class, Avi ripped up his prepared lecture notes and said &#8216;we push code from day one&#8217; and had us make a commit to github.Curb. I came here to build things, and so build something I did.</p>
+
+<p>Curb Your Flombaum takes a random quote from the blog the class keeps about Avi, calls up my phone, and speaks it back to me. Here is how I did it.</p>
+
+<ol>
+<li><p>Use feedzirra to parse XML and grab a random quote
+There are lots of XML parsers out there, but I choose to use feedzirra because it seemed simple and had decent documentation. First, I had to require feedzira
+require &#8220;feedzirra&#8221;
+Then to actually get the quote I had to set the entire XML feed into a variable
+feed = Feedzirra::Feed.fetch_and_parse(&#8216;http://shitavisays.tumblr.com/rss&#8217;)
+From there I could just select a random entry be calling .sample and get just the title element (omitting any comments made beyond just Avi&#8217;s quote). The code will look like this
+feed.entries.sample.title.to_s</p></li>
+<li><p>Convert the random quote to an xml file
+I now have the code that will give me back a string of a random Avi quote, but I need to put it in an actual XML file. To do that I&#8217;m first setting a variable xml to a string. This string is in the TwiML format, which I learned about using twillo&#8217;s excellent documentation. Twilio will automatically play an mp3 file if you wrap the url for the file in a <Play> command. Similarly Twilio will turn any text you wrap in a <Say> command into speech. Notice that I&#8217;ve put a \ before the quotes inside this string. I&#8217;m doing this to escape the characters so that ruby doesn&#8217;t prematurely end my string.
+&#8221;&#8217;ruby
+xml = &#8220;&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?>
+<Response>
+<Play>https://s3.amazonaws.com/NYConRails/intro.mp3</Play>
+<Pause length=\"0.5\"/>
+<Say voice=\"woman\">#{feed.entries.sample.title.to_s}</Say>
+<Pause length=\"0.5\"/>
+<Play>https://s3.amazonaws.com/NYConRails/exit.mp3</Play>
+</Response>&#8221;
+&#8221;&#8217;</p></li>
+<li><p>Save the file to my computer
+Now that I have a dynamic variable for what an XML file would contain, I need to save it to my computer. Ruby&#8217;s official documentation made this task relatively easy.
+File.open(&#8216;call.xml&#8217;, &#8216;w+&#8217;) { |f|
+f.puts xml
+}</p></li>
+<li><p>Upload the file to Amazon S3
+Each time I run the program, I now have a new file called &#8216;call.xml&#8217; that is saved to my computer. Each time it will include a new random Avi quote. I now need to host this file on the internet in order for Twilio to be able to work. I tried a lot of different solutions, but ultimately Amazon S3 was what I went with.  I made an account, created a &#8216;bucket&#8217; to store my files, and then was able to write more code. First I had to put in my credentials
+AWS::S3::Base.establish_connection!(
+:access_key_id     => &#8216;SDF7FS7DFS202S2LKSDS&#8217;, # <-- put in your own, this is a fake one
+:secret_access_key => &#8216;ASFDHSADF23HSDFASDFJSSX722iaf28#sdfsdf2&#8217; # <-- put in your own, this is a fake one
+)
+Then I had to actually upload the file to S3
+file = 'call.xml'
+AWS::S3::S3Object.store(file, open(file), 'NYConRails', :access => :public_read)
+Aazon&#8217;s official documentation left out the &#8216;AWS::S3&#8217; prefix, which I had to figure out on my own. I also just made a guess on how to make the file public (it&#8217;s private by default), so they could improve that part of the documentation as well.</p></li>
+<li><p>Use Twilio to convert the text into speech and call my phone
+Now that I have an XML file with a random Avi quote hosted on the internet, I need to configure Twilio to do it&#8217;s magic. First I set my my credentials
+account_sid = &#8216;JH96987LKJLKJLKJsadfasdf3323423sfasd&#8217; # &lt;&#8211; put in your own, this is a fake one
+auth_token = &#8216;98273234sdf2342309sd0f9s8fd980s3&#8217; # &lt;&#8211; put in your own, this is a fake one</p></li>
+</ol>
+
+
+<p>Then I set up a client to talk to the Twilio REST API
+@client = Twilio::REST::Client.new account_sid, auth_token</p>
+
+<p>Finally I give twilio instructions on what I want it to do. I want it to call my phone (the to:) using the phone number i have associated with the account (the from:) using the instructions in TwiML format I have hosted on S3 (the url:). At first this did not work, but I asked Twilio for help and they got back to me saying I needed to specify that this was a GET request (the method:).
+@call = @client.account.calls.create(
+  :from => &#8216;+12129983322&#8217;, # <-- put in your own (must be the one linked to your twilio account), this is a fake one
+  :to => &#8216;+12123340076&#8217;, # <-- put in whatever phone number you want to call, this is a fake one
+  :url => &#8216;https://s3.amazonaws.com/NYConRails/call.xml&#8217;, # <-- put in your own, if you use S3 it will just be https://s3.amazonaws.com/YOUR_BUCKET_NAME/call.xml
+  :method => &#8216;GET&#8217;
+)</p>
+
+<p>In conclusion
+So there is how I made Curb Your Flombaum. I have open sourced the project at github, and would love anyone to take this code and run with it. I have a lot of ideas for improving this app - maybe making the ability to sign up to get Avi quotes sent to your phone as they come in. However this was an MVP for a demo, and I&#8217;m proud to have done this after learning how to code for just three weeks.</p>
 </div>
 
 
