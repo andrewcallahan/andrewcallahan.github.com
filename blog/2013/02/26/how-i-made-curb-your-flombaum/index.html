@@ -99,19 +99,37 @@
 <p>Curb Your Flombaum takes a random quote from the blog the class keeps about Avi, calls up my phone, and speaks it back to me. Here is how I did it.</p>
 
 <ol>
-<li><p>Use feedzirra to parse XML and grab a random quote
-There are lots of XML parsers out there, but I choose to use feedzirra because it seemed simple and had decent documentation. First, I had to require feedzira
-require &#8220;feedzirra&#8221;
-Then to actually get the quote I had to set the entire XML feed into a variable
-feed = Feedzirra::Feed.fetch_and_parse(&#8216;http://shitavisays.tumblr.com/rss&#8217;)
-From there I could just select a random entry be calling .sample and get just the title element (omitting any comments made beyond just Avi&#8217;s quote). The code will look like this
-feed.entries.sample.title.to_s</p></li>
-<li><p>Convert the random quote to an xml file
-I now have the code that will give me back a string of a random Avi quote, but I need to put it in an actual XML file. To do that I&#8217;m first setting a variable xml to a string. This string is in the TwiML format, which I learned about using twillo&#8217;s excellent documentation. Twilio will automatically play an mp3 file if you wrap the url for the file in a <Play> command. Similarly Twilio will turn any text you wrap in a <Say> command into speech. Notice that I&#8217;ve put a \ before the quotes inside this string. I&#8217;m doing this to escape the characters so that ruby doesn&#8217;t prematurely end my string.</p></li>
+<li>Use feedzirra to parse XML and grab a random quote
+There are lots of XML parsers out there, but I choose to use feedzirra because it seemed simple and had decent documentation. First, I had to require feedzira</li>
 </ol>
 
 
-<figure class='code'><figcaption><span>Discover if a number is prime</span><a href='http://www.noulakaz.net/weblog/2007/03/18/a-regular-expression-to-check-for-prime-numbers/'>Source Article</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s2">&quot;feedzirra&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then to actually get the quote I had to set the entire XML feed into a variable</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">feed</span> <span class="o">=</span> <span class="ss">Feedzirra</span><span class="p">:</span><span class="ss">:Feed</span><span class="o">.</span><span class="n">fetch_and_parse</span><span class="p">(</span><span class="s1">&#39;http://shitavisays.tumblr.com/rss&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From there I could just select a random entry be calling .sample and get just the title element (omitting any comments made beyond just Avi&#8217;s quote). The code will look like this</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">feed</span><span class="o">.</span><span class="n">entries</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">to_s</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>Convert the random quote to an xml file
+I now have the code that will give me back a string of a random Avi quote, but I need to put it in an actual XML file. To do that I&#8217;m first setting a variable xml to a string. This string is in the TwiML format, which I learned about using twillo&#8217;s excellent documentation. Twilio will automatically play an mp3 file if you wrap the url for the file in a <Play> command. Similarly Twilio will turn any text you wrap in a <Say> command into speech. Notice that I&#8217;ve put a \ before the quotes inside this string. I&#8217;m doing this to escape the characters so that ruby doesn&#8217;t prematurely end my string.</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
