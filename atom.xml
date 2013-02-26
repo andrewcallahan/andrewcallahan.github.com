@@ -4,7 +4,7 @@
   <title><![CDATA[Learning To Code]]></title>
   <link href="http://andrewcallahan.github.com/atom.xml" rel="self"/>
   <link href="http://andrewcallahan.github.com/"/>
-  <updated>2013-02-26T09:36:47-05:00</updated>
+  <updated>2013-02-26T09:38:02-05:00</updated>
   <id>http://andrewcallahan.github.com/</id>
   <author>
     <name><![CDATA[Andrew Callahan]]></name>
@@ -18,15 +18,13 @@
     <link href="http://andrewcallahan.github.com/blog/2013/02/26/how-i-made-curb-your-flombaum/"/>
     <updated>2013-02-26T09:19:00-05:00</updated>
     <id>http://andrewcallahan.github.com/blog/2013/02/26/how-i-made-curb-your-flombaum</id>
-    <content type="html"><![CDATA[<p>How I made Curb Your Flombaum</p>
-
-<p>I&#8217;ve been at the flatiron school for about 3 weeks now. I&#8217;ve been learning so much - it&#8217;s really incredible how much progress I&#8217;ve been able to make in such a short period of time. This is in no small part due to the ability of Avi and Bob to both engage is in lectures and help us one-on-one when we get stuck. Part of being engaging in lectures though, has lead to some rather interesting things being said. Last semester the class started a blog to keep track of such utterances. I&#8217;m proud to say our semester has not only kept up this tradition, but in just three weeks already surpassed the last class in terms of the number of blog posts!</p>
+    <content type="html"><![CDATA[<p>I&#8217;ve been at the flatiron school for about 3 weeks now. I&#8217;ve been learning so much - it&#8217;s really incredible how much progress I&#8217;ve been able to make in such a short period of time. This is in no small part due to the ability of Avi and Bob to both engage is in lectures and help us one-on-one when we get stuck. Part of being engaging in lectures though, has lead to some rather interesting things being said. Last semester the class started a blog to keep track of such utterances. I&#8217;m proud to say our semester has not only kept up this tradition, but in just three weeks already surpassed the last class in terms of the number of blog posts!</p>
 
 <p>When I was asked to present to NYC on Rails, I knew that I was limited in my knowledge of programming, and had limited time to prepare since I was spending all day in class and all night studying and doing homework. I was supposed to find a topic, research it, and make a presentation. However I was determined to build something, no matter how small. On the first day of class, Avi ripped up his prepared lecture notes and said &#8216;we push code from day one&#8217; and had us make a commit to github.Curb. I came here to build things, and so build something I did.</p>
 
 <p>Curb Your Flombaum takes a random quote from the blog the class keeps about Avi, calls up my phone, and speaks it back to me. Here is how I did it.</p>
 
-<p><b>1. Use feedzirra to parse XML and grab a random quote</b></p>
+<h2>1. Use feedzirra to parse XML and grab a random quote</h2>
 
 
 <p>There are lots of XML parsers out there, but I choose to use feedzirra because it seemed simple and had decent documentation. First, I had to require the Feedzira, Twilio, and Amazon S3 gems</p>
