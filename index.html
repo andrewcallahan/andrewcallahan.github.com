@@ -103,12 +103,16 @@
 
 <ol>
 <li>Use feedzirra to parse XML and grab a random quote
-There are lots of XML parsers out there, but I choose to use feedzirra because it seemed simple and had decent documentation. First, I had to require feedzira</li>
+There are lots of XML parsers out there, but I choose to use feedzirra because it seemed simple and had decent documentation. First, I had to require the Feedzira, Twilio, and Amazon S3 gems</li>
 </ol>
 
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s2">&quot;feedzirra&quot;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;twilio-ruby&#39;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;aws/s3&#39;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -196,22 +200,40 @@ Each time I run the program, I now have a new file called &#8216;call.xml&#8217;
 
 <ol>
 <li>Use Twilio to convert the text into speech and call my phone
-Now that I have an XML file with a random Avi quote hosted on the internet, I need to configure Twilio to do it&#8217;s magic. First I set my my credentials
-account_sid = &#8216;JH96987LKJLKJLKJsadfasdf3323423sfasd&#8217; # &lt;&#8211; put in your own, this is a fake one
-auth_token = &#8216;98273234sdf2342309sd0f9s8fd980s3&#8217; # &lt;&#8211; put in your own, this is a fake one</li>
+Now that I have an XML file with a random Avi quote hosted on the internet, I need to configure Twilio to do it&#8217;s magic. First I set my my credentials</li>
 </ol>
 
 
-<p>Then I set up a client to talk to the Twilio REST API
-@client = Twilio::REST::Client.new account_sid, auth_token</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">account_sid</span> <span class="o">=</span> <span class="s1">&#39;JH96987LKJLKJLKJsadfasdf3323423sfasd&#39;</span> <span class="c1"># &lt;-- put in your own, this is a fake one</span>
+</span><span class='line'><span class="n">auth_token</span> <span class="o">=</span> <span class="s1">&#39;98273234sdf2342309sd0f9s8fd980s3&#39;</span> <span class="c1"># &lt;-- put in your own, this is a fake one</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p>Finally I give twilio instructions on what I want it to do. I want it to call my phone (the to:) using the phone number i have associated with the account (the from:) using the instructions in TwiML format I have hosted on S3 (the url:). At first this did not work, but I asked Twilio for help and they got back to me saying I needed to specify that this was a GET request (the method:).
-@call = @client.account.calls.create(
-  :from => &#8216;+12129983322&#8217;, # <-- put in your own (must be the one linked to your twilio account), this is a fake one
-  :to => &#8216;+12123340076&#8217;, # <-- put in whatever phone number you want to call, this is a fake one
-  :url => &#8216;https://s3.amazonaws.com/NYConRails/call.xml&#8217;, # <-- put in your own, if you use S3 it will just be https://s3.amazonaws.com/YOUR_BUCKET_NAME/call.xml
-  :method => &#8216;GET&#8217;
-)</p>
+
+<p>Then I set up a client to talk to the Twilio REST API</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="vi">@client</span> <span class="o">=</span> <span class="ss">Twilio</span><span class="p">:</span><span class="ss">:REST</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span> <span class="n">account_sid</span><span class="p">,</span> <span class="n">auth_token</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally I give twilio instructions on what I want it to do. I want it to call my phone (the to:) using the phone number i have associated with the account (the from:) using the instructions in TwiML format I have hosted on S3 (the url:). At first this did not work, but I asked Twilio for help and they got back to me saying I needed to specify that this was a GET request (the method:).</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="vi">@call</span> <span class="o">=</span> <span class="vi">@client</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">calls</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+</span><span class='line'>  <span class="ss">:from</span> <span class="o">=&gt;</span> <span class="s1">&#39;+12129983322&#39;</span><span class="p">,</span> <span class="c1"># &lt;-- put in your own (must be the one linked to your twilio account), this is a fake one</span>
+</span><span class='line'>  <span class="ss">:to</span> <span class="o">=&gt;</span> <span class="s1">&#39;+12123340076&#39;</span><span class="p">,</span> <span class="c1"># &lt;-- put in whatever phone number you want to call, this is a fake one</span>
+</span><span class='line'>  <span class="ss">:url</span> <span class="o">=&gt;</span> <span class="s1">&#39;https://s3.amazonaws.com/NYConRails/call.xml&#39;</span><span class="p">,</span> <span class="c1"># &lt;-- put in your own, if you use S3 it will just be https://s3.amazonaws.com/YOUR_BUCKET_NAME/call.xml</span>
+</span><span class='line'>  <span class="ss">:method</span> <span class="o">=&gt;</span> <span class="s1">&#39;GET&#39;</span>
+</span><span class='line'><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>In conclusion
 So there is how I made Curb Your Flombaum. I have open sourced the project at github, and would love anyone to take this code and run with it. I have a lot of ideas for improving this app - maybe making the ability to sign up to get Avi quotes sent to your phone as they come in. However this was an MVP for a demo, and I&#8217;m proud to have done this after learning how to code for just three weeks.</p>
