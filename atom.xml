@@ -4,7 +4,7 @@
   <title><![CDATA[Learning To Code]]></title>
   <link href="http://andrewcallahan.github.com/atom.xml" rel="self"/>
   <link href="http://andrewcallahan.github.com/"/>
-  <updated>2013-02-26T09:44:36-05:00</updated>
+  <updated>2013-02-26T10:01:08-05:00</updated>
   <id>http://andrewcallahan.github.com/</id>
   <author>
     <name><![CDATA[Andrew Callahan]]></name>
@@ -12,6 +12,29 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[It's Reduce]]></title>
+    <link href="http://andrewcallahan.github.com/blog/2013/02/26/its-reduce/"/>
+    <updated>2013-02-26T10:00:00-05:00</updated>
+    <id>http://andrewcallahan.github.com/blog/2013/02/26/its-reduce</id>
+    <content type="html"><![CDATA[<p>When I think of the term &#8216;inject&#8217;, I think of Ron Popeil&#8217;s Solid Flavor Injector - where you can literally put solid garlic cloves INTO a meat roast. Classy.</p>
+
+<iframe width="420" height="315" src="http://www.youtube.com/embed/lrccEj-nSXI" frameborder="0" allowfullscreen></iframe>
+
+
+<p>When I first came across Ruby&#8217;s method &#8216;Inject&#8217; I was very confused. The point of inject is to get rid of local variables that iterate when you want to do something simple like sum up the first 10 numbers.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="p">(</span><span class="mi">1</span><span class="o">.</span><span class="n">.</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">result</span><span class="p">,</span> <span class="n">element</span><span class="o">|</span> <span class="n">result</span> <span class="o">+</span> <span class="n">element</span> <span class="p">}</span>
+</span><span class='line'><span class="c1">#=&gt;55</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>But what this &#8216;Inject&#8217; method is really doing is reducing. Reducing a range of 10 numbers into just their one sum. Reducing the number of local variables you need to keep track of. Reducing the amount of code you need to write. This is why, even after I learned about inject, the name was still throwing me off. Then I discovered that &#8216;Reduce&#8217; is actually an alias to &#8216;Inject&#8217; in ruby! Thank you Matz for making me happy. I&#8217;ll be leaving the notion of injecting to Ron Popeil, and will write reduce methods in my code from now on.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[How I Made Curb Your Flombaum]]></title>
