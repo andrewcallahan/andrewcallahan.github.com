@@ -137,44 +137,68 @@ I now have the code that will give me back a string of a random Avi quote, but I
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Fixnum</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">prime?</span>
-</span><span class='line'>    <span class="p">(</span><span class="s1">&#39;1&#39;</span> <span class="o">*</span> <span class="nb">self</span><span class="p">)</span> <span class="o">!~</span> <span class="sr">/^1?$|^(11+?)\1+$/</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">xml</span> <span class="o">=</span> <span class="s2">&quot;&lt;?xml version=</span><span class="se">\&quot;</span><span class="s2">1.0</span><span class="se">\&quot;</span><span class="s2"> encoding=</span><span class="se">\&quot;</span><span class="s2">UTF-8</span><span class="se">\&quot;</span><span class="s2">?&gt;</span>
+</span><span class='line'><span class="s2">&lt;Response&gt;</span>
+</span><span class='line'><span class="s2">  &lt;Play&gt;https://s3.amazonaws.com/NYConRails/intro.mp3&lt;/Play&gt;</span>
+</span><span class='line'><span class="s2">  &lt;Pause length=</span><span class="se">\&quot;</span><span class="s2">0.5</span><span class="se">\&quot;</span><span class="s2">/&gt;</span>
+</span><span class='line'><span class="s2">  &lt;Say voice=</span><span class="se">\&quot;</span><span class="s2">woman</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="si">#{</span><span class="n">feed</span><span class="o">.</span><span class="n">entries</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">to_s</span><span class="si">}</span><span class="s2">&lt;/Say&gt;</span>
+</span><span class='line'><span class="s2">  &lt;Pause length=</span><span class="se">\&quot;</span><span class="s2">0.5</span><span class="se">\&quot;</span><span class="s2">/&gt;</span>
+</span><span class='line'><span class="s2">  &lt;Play&gt;https://s3.amazonaws.com/NYConRails/exit.mp3&lt;/Play&gt;</span>
+</span><span class='line'><span class="s2">&lt;/Response&gt;&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>xml = &#8220;&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?>
-<Response>
-  <Play>https://s3.amazonaws.com/NYConRails/intro.mp3</Play>
-  <Pause length=\"0.5\"/>
-  <Say voice=\"woman\">#{feed.entries.sample.title.to_s}</Say>
-  <Pause length=\"0.5\"/>
-  <Play>https://s3.amazonaws.com/NYConRails/exit.mp3</Play>
-</Response>&#8221;
-&#8221;&#8217;</p>
+<ol>
+<li>Save the file to my computer
+Now that I have a dynamic variable for what an XML file would contain, I need to save it to my computer. Ruby&#8217;s official documentation made this task relatively easy.</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;call.xml&#39;</span><span class="p">,</span> <span class="s1">&#39;w+&#39;</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+</span><span class='line'>  <span class="n">f</span><span class="o">.</span><span class="n">puts</span> <span class="n">xml</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <ol>
-<li><p>Save the file to my computer
-Now that I have a dynamic variable for what an XML file would contain, I need to save it to my computer. Ruby&#8217;s official documentation made this task relatively easy.
-File.open(&#8216;call.xml&#8217;, &#8216;w+&#8217;) { |f|
-f.puts xml
-}</p></li>
-<li><p>Upload the file to Amazon S3
-Each time I run the program, I now have a new file called &#8216;call.xml&#8217; that is saved to my computer. Each time it will include a new random Avi quote. I now need to host this file on the internet in order for Twilio to be able to work. I tried a lot of different solutions, but ultimately Amazon S3 was what I went with.  I made an account, created a &#8216;bucket&#8217; to store my files, and then was able to write more code. First I had to put in my credentials
-AWS::S3::Base.establish_connection!(
-:access_key_id     => &#8216;SDF7FS7DFS202S2LKSDS&#8217;, # <-- put in your own, this is a fake one
-:secret_access_key => &#8216;ASFDHSADF23HSDFASDFJSSX722iaf28#sdfsdf2&#8217; # <-- put in your own, this is a fake one
-)
-Then I had to actually upload the file to S3
-file = 'call.xml'
-AWS::S3::S3Object.store(file, open(file), 'NYConRails', :access => :public_read)
-Aazon&#8217;s official documentation left out the &#8216;AWS::S3&#8217; prefix, which I had to figure out on my own. I also just made a guess on how to make the file public (it&#8217;s private by default), so they could improve that part of the documentation as well.</p></li>
-<li><p>Use Twilio to convert the text into speech and call my phone
+<li>Upload the file to Amazon S3
+Each time I run the program, I now have a new file called &#8216;call.xml&#8217; that is saved to my computer. Each time it will include a new random Avi quote. I now need to host this file on the internet in order for Twilio to be able to work. I tried a lot of different solutions, but ultimately Amazon S3 was what I went with.  I made an account, created a &#8216;bucket&#8217; to store my files, and then was able to write more code. First I had to put in my credentials</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="ss">AWS</span><span class="p">:</span><span class="ss">:S3</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">establish_connection!</span><span class="p">(</span>
+</span><span class='line'>  <span class="ss">:access_key_id</span>     <span class="o">=&gt;</span> <span class="s1">&#39;SDF7FS7DFS202S2LKSDS&#39;</span><span class="p">,</span> <span class="c1"># &lt;-- put in your own, this is a fake one</span>
+</span><span class='line'>  <span class="ss">:secret_access_key</span> <span class="o">=&gt;</span> <span class="s1">&#39;ASFDHSADF23HSDFASDFJSSX722iaf28#sdfsdf2&#39;</span> <span class="c1"># &lt;-- put in your own, this is a fake one</span>
+</span><span class='line'><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then I had to actually upload the file to S3</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">file</span> <span class="o">=</span> <span class="s1">&#39;call.xml&#39;</span>
+</span><span class='line'>  <span class="ss">AWS</span><span class="p">:</span><span class="ss">:S3</span><span class="o">::</span><span class="no">S3Object</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">),</span> <span class="s1">&#39;NYConRails&#39;</span><span class="p">,</span> <span class="ss">:access</span> <span class="o">=&gt;</span> <span class="ss">:public_read</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Amazon&#8217;s official documentation left out the &#8216;AWS::S3&#8217; prefix, which I had to figure out on my own. I also just made a guess on how to make the file public (it&#8217;s private by default), so they could improve that part of the documentation as well.</p>
+
+<ol>
+<li>Use Twilio to convert the text into speech and call my phone
 Now that I have an XML file with a random Avi quote hosted on the internet, I need to configure Twilio to do it&#8217;s magic. First I set my my credentials
 account_sid = &#8216;JH96987LKJLKJLKJsadfasdf3323423sfasd&#8217; # &lt;&#8211; put in your own, this is a fake one
-auth_token = &#8216;98273234sdf2342309sd0f9s8fd980s3&#8217; # &lt;&#8211; put in your own, this is a fake one</p></li>
+auth_token = &#8216;98273234sdf2342309sd0f9s8fd980s3&#8217; # &lt;&#8211; put in your own, this is a fake one</li>
 </ol>
 
 
