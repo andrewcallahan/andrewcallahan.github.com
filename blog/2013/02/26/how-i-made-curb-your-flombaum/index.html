@@ -108,7 +108,7 @@ From there I could just select a random entry be calling .sample and get just th
 feed.entries.sample.title.to_s</p></li>
 <li><p>Convert the random quote to an xml file
 I now have the code that will give me back a string of a random Avi quote, but I need to put it in an actual XML file. To do that I&#8217;m first setting a variable xml to a string. This string is in the TwiML format, which I learned about using twillo&#8217;s excellent documentation. Twilio will automatically play an mp3 file if you wrap the url for the file in a <Play> command. Similarly Twilio will turn any text you wrap in a <Say> command into speech. Notice that I&#8217;ve put a \ before the quotes inside this string. I&#8217;m doing this to escape the characters so that ruby doesn&#8217;t prematurely end my string.
-&#8221;&#8217;ruby
+File /Users/andrewcallahan/Documents/Development/Repositories/octopress/source/downloads/code/test.rb could not be found
 xml = &#8220;&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?>
 <Response>
 <Play>https://s3.amazonaws.com/NYConRails/intro.mp3</Play>
