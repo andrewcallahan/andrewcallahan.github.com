@@ -4,7 +4,7 @@
   <title><![CDATA[Learning To Code]]></title>
   <link href="http://andrewcallahan.github.com/atom.xml" rel="self"/>
   <link href="http://andrewcallahan.github.com/"/>
-  <updated>2013-02-05T21:50:11-05:00</updated>
+  <updated>2013-02-26T09:20:31-05:00</updated>
   <id>http://andrewcallahan.github.com/</id>
   <author>
     <name><![CDATA[Andrew Callahan]]></name>
@@ -12,6 +12,15 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[How I Made Curb Your Flombaum]]></title>
+    <link href="http://andrewcallahan.github.com/blog/2013/02/26/how-i-made-curb-your-flombaum/"/>
+    <updated>2013-02-26T09:19:00-05:00</updated>
+    <id>http://andrewcallahan.github.com/blog/2013/02/26/how-i-made-curb-your-flombaum</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Hello World]]></title>
