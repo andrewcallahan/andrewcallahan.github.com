@@ -127,11 +127,12 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<ol>
-<li>Convert the random quote to an xml file
-I now have the code that will give me back a string of a random Avi quote, but I need to put it in an actual XML file. To do that I&#8217;m first setting a variable xml to a string. This string is in the TwiML format, which I learned about using twillo&#8217;s excellent documentation. Twilio will automatically play an mp3 file if you wrap the url for the file in a <Play> command. Similarly Twilio will turn any text you wrap in a <Say> command into speech. Notice that I&#8217;ve put a \ before the quotes inside this string. I&#8217;m doing this to escape the characters so that ruby doesn&#8217;t prematurely end my string.</li>
-</ol>
 
+
+<h2>2. Convert the random quote to an xml file</h2>
+
+
+<p>I now have the code that will give me back a string of a random Avi quote, but I need to put it in an actual XML file. To do that I&#8217;m first setting a variable xml to a string. This string is in the TwiML format, which I learned about using twillo&#8217;s excellent documentation. Twilio will automatically play an mp3 file if you wrap the url for the file in a <Play> command. Similarly Twilio will turn any text you wrap in a <Say> command into speech. Notice that I&#8217;ve put a \ before the quotes inside this string. I&#8217;m doing this to escape the characters so that ruby doesn&#8217;t prematurely end my string.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -152,11 +153,12 @@ I now have the code that will give me back a string of a random Avi quote, but I
 </span></code></pre></td></tr></table></div></figure>
 
 
-<ol>
-<li>Save the file to my computer
-Now that I have a dynamic variable for what an XML file would contain, I need to save it to my computer. Ruby&#8217;s official documentation made this task relatively easy.</li>
-</ol>
 
+
+<h2>3. Save the file to my computer</h2>
+
+
+<p>Now that I have a dynamic variable for what an XML file would contain, I need to save it to my computer. Ruby&#8217;s official documentation made this task relatively easy.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -167,11 +169,12 @@ Now that I have a dynamic variable for what an XML file would contain, I need to
 </span></code></pre></td></tr></table></div></figure>
 
 
-<ol>
-<li>Upload the file to Amazon S3
-Each time I run the program, I now have a new file called &#8216;call.xml&#8217; that is saved to my computer. Each time it will include a new random Avi quote. I now need to host this file on the internet in order for Twilio to be able to work. I tried a lot of different solutions, but ultimately Amazon S3 was what I went with.  I made an account, created a &#8216;bucket&#8217; to store my files, and then was able to write more code. First I had to put in my credentials</li>
-</ol>
 
+
+<h2>4. Upload the file to Amazon S3</h2>
+
+
+<p>Each time I run the program, I now have a new file called &#8216;call.xml&#8217; that is saved to my computer. Each time it will include a new random Avi quote. I now need to host this file on the internet in order for Twilio to be able to work. I tried a lot of different solutions, but ultimately Amazon S3 was what I went with.  I made an account, created a &#8216;bucket&#8217; to store my files, and then was able to write more code. First I had to put in my credentials</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -195,11 +198,10 @@ Each time I run the program, I now have a new file called &#8216;call.xml&#8217;
 
 <p>Amazon&#8217;s official documentation left out the &#8216;AWS::S3&#8217; prefix, which I had to figure out on my own. I also just made a guess on how to make the file public (it&#8217;s private by default), so they could improve that part of the documentation as well.</p>
 
-<ol>
-<li>Use Twilio to convert the text into speech and call my phone
-Now that I have an XML file with a random Avi quote hosted on the internet, I need to configure Twilio to do it&#8217;s magic. First I set my my credentials</li>
-</ol>
+<h2>5. Use Twilio to convert the text into speech and call my phone</h2>
 
+
+<p>Now that I have an XML file with a random Avi quote hosted on the internet, I need to configure Twilio to do it&#8217;s magic. First I set my my credentials</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -232,8 +234,12 @@ Now that I have an XML file with a random Avi quote hosted on the internet, I ne
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>In conclusion
-So there is how I made Curb Your Flombaum. I have open sourced the project at github, and would love anyone to take this code and run with it. I have a lot of ideas for improving this app - maybe making the ability to sign up to get Avi quotes sent to your phone as they come in. However this was an MVP for a demo, and I&#8217;m proud to have done this after learning how to code for just three weeks.</p>
+
+
+<h2>In conclusion</h2>
+
+
+<p>So there is how I made Curb Your Flombaum. I have open sourced the project at github, and would love anyone to take this code and run with it. I have a lot of ideas for improving this app - maybe making the ability to sign up to get Avi quotes sent to your phone as they come in. However this was an MVP for a demo, and I&#8217;m proud to have done this after learning how to code for just three weeks.</p>
 </div>
   
   
