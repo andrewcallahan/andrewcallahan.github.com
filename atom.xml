@@ -4,7 +4,7 @@
   <title><![CDATA[Learning To Code]]></title>
   <link href="http://andrewcallahan.github.com/atom.xml" rel="self"/>
   <link href="http://andrewcallahan.github.com/"/>
-  <updated>2013-02-26T09:26:46-05:00</updated>
+  <updated>2013-02-26T09:28:23-05:00</updated>
   <id>http://andrewcallahan.github.com/</id>
   <author>
     <name><![CDATA[Andrew Callahan]]></name>
@@ -35,17 +35,34 @@ feed = Feedzirra::Feed.fetch_and_parse(&#8216;http://shitavisays.tumblr.com/rss&
 From there I could just select a random entry be calling .sample and get just the title element (omitting any comments made beyond just Avi&#8217;s quote). The code will look like this
 feed.entries.sample.title.to_s</p></li>
 <li><p>Convert the random quote to an xml file
-I now have the code that will give me back a string of a random Avi quote, but I need to put it in an actual XML file. To do that I&#8217;m first setting a variable xml to a string. This string is in the TwiML format, which I learned about using twillo&#8217;s excellent documentation. Twilio will automatically play an mp3 file if you wrap the url for the file in a <Play> command. Similarly Twilio will turn any text you wrap in a <Say> command into speech. Notice that I&#8217;ve put a \ before the quotes inside this string. I&#8217;m doing this to escape the characters so that ruby doesn&#8217;t prematurely end my string.
-File /Users/andrewcallahan/Documents/Development/Repositories/octopress/source/downloads/code/test.rb could not be found
-xml = &#8220;&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?>
+I now have the code that will give me back a string of a random Avi quote, but I need to put it in an actual XML file. To do that I&#8217;m first setting a variable xml to a string. This string is in the TwiML format, which I learned about using twillo&#8217;s excellent documentation. Twilio will automatically play an mp3 file if you wrap the url for the file in a <Play> command. Similarly Twilio will turn any text you wrap in a <Say> command into speech. Notice that I&#8217;ve put a \ before the quotes inside this string. I&#8217;m doing this to escape the characters so that ruby doesn&#8217;t prematurely end my string.</p></li>
+</ol>
+
+
+<figure class='code'><figcaption><span>Discover if a number is prime</span><a href='http://www.noulakaz.net/weblog/2007/03/18/a-regular-expression-to-check-for-prime-numbers/'>Source Article</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Fixnum</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">prime?</span>
+</span><span class='line'>    <span class="p">(</span><span class="s1">&#39;1&#39;</span> <span class="o">*</span> <span class="nb">self</span><span class="p">)</span> <span class="o">!~</span> <span class="sr">/^1?$|^(11+?)\1+$/</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>xml = &#8220;&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?>
 <Response>
-<Play>https://s3.amazonaws.com/NYConRails/intro.mp3</Play>
-<Pause length=\"0.5\"/>
-<Say voice=\"woman\">#{feed.entries.sample.title.to_s}</Say>
-<Pause length=\"0.5\"/>
-<Play>https://s3.amazonaws.com/NYConRails/exit.mp3</Play>
+  <Play>https://s3.amazonaws.com/NYConRails/intro.mp3</Play>
+  <Pause length=\"0.5\"/>
+  <Say voice=\"woman\">#{feed.entries.sample.title.to_s}</Say>
+  <Pause length=\"0.5\"/>
+  <Play>https://s3.amazonaws.com/NYConRails/exit.mp3</Play>
 </Response>&#8221;
-&#8221;&#8217;</p></li>
+&#8221;&#8217;</p>
+
+<ol>
 <li><p>Save the file to my computer
 Now that I have a dynamic variable for what an XML file would contain, I need to save it to my computer. Ruby&#8217;s official documentation made this task relatively easy.
 File.open(&#8216;call.xml&#8217;, &#8216;w+&#8217;) { |f|
