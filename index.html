@@ -9,7 +9,7 @@
   <meta name="author" content="Andrew Callahan">
 
   
-  <meta name="description" content="When I think of the term &#8216;inject&#8217;, I think of Ron Popeil&#8217;s Solid Flavor Injector - where you can literally put solid garlic cloves &hellip;">
+  <meta name="description" content="A few days before I started the Flatiron School, Dave introduced me to Project Euler. While there is some disagreement over how to pronounce it (some &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +64,140 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/03/28/top-3-reasons-to-try-project-euler/">Top 3 Reasons to Try Project Euler</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-28T09:13:00-04:00" pubdate data-updated="true">Mar 28<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>A few days before I started the Flatiron School, <a href="http://chickenriceplatter.github.com/">Dave</a> introduced me to <a href="http://projecteuler.net/">Project Euler</a>. While there is some disagreement over how to pronounce it (some say &#8216;oil-er&#8217;, some say &#8216;you-ler&#8217;), there is a broad consensus that this is a great way to learn how to become a better programmer.</p>
+
+<p>I&#8217;ve been going through these problems over the last few weeks and have a <a href="https://github.com/andrewcallahan/projecteuler">git repository</a> of my work. I&#8217;ll take the problem I finished last night, and use it to show what I&#8217;ve been able to learn.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Summation</span> <span class="n">of</span> <span class="n">primes</span>
+</span><span class='line'><span class="no">Problem</span> <span class="mi">10</span>
+</span><span class='line'><span class="no">The</span> <span class="n">sum</span> <span class="n">of</span> <span class="n">the</span> <span class="n">primes</span> <span class="n">below</span> <span class="mi">10</span> <span class="n">is</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">+</span> <span class="mi">5</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">=</span> <span class="mi">17</span><span class="o">.</span>
+</span><span class='line'><span class="no">Find</span> <span class="n">the</span> <span class="n">sum</span> <span class="n">of</span> <span class="n">all</span> <span class="n">the</span> <span class="n">primes</span> <span class="n">below</span> <span class="n">two</span> <span class="n">million</span><span class="o">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h2>. You Get A Math Refersher</h2>
+
+
+<p>First, I had to jog my memory about Prime numbers. I remembered that prime numbers were numbers that had no other factors besides 1 and itself. Not anything enlightening, but good to know I still remember middle school math concepts.</p>
+
+<h2>2. You Are Forced To Break Down Problems</h2>
+
+
+<p>I then realized I needed to break this problem down into many smaller problems. This has been one of the most critical skills I&#8217;ve developed while at the Flatiron School.</p>
+
+<p>Here is how I broke down this problem.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="mi">1</span><span class="o">.</span> <span class="n">find</span> <span class="n">all</span> <span class="n">prime</span> <span class="n">numbers</span> <span class="n">under</span> <span class="mi">2</span><span class="p">,</span><span class="mo">000</span><span class="p">,</span><span class="mo">000</span>
+</span><span class='line'><span class="mi">2</span><span class="o">.</span> <span class="n">take</span> <span class="n">all</span> <span class="n">these</span> <span class="n">numbers</span> <span class="ow">and</span> <span class="n">add</span> <span class="n">them</span> <span class="n">together</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once I started the first step I realized I could break it down further.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">a</span><span class="o">.</span> <span class="no">Find</span> <span class="n">all</span> <span class="n">the</span> <span class="n">numbers</span> <span class="n">under</span> <span class="mi">2</span><span class="p">,</span><span class="mo">000</span><span class="p">,</span><span class="mo">000</span>
+</span><span class='line'><span class="n">b</span><span class="o">.</span> <span class="no">Check</span> <span class="k">if</span> <span class="n">each</span> <span class="n">one</span> <span class="n">is</span> <span class="n">prime</span>
+</span><span class='line'><span class="n">c</span><span class="o">.</span> <span class="no">If</span> <span class="n">it</span> <span class="n">is</span> <span class="n">prime</span><span class="p">,</span> <span class="n">add</span> <span class="n">it</span> <span class="n">into</span> <span class="n">an</span> <span class="n">array</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For the second step, I already knew that what I was doing of taking an array and adding it together perfectly fit the pattern of reduce, and so didn&#8217;t need to further break it down.</p>
+
+<h2>3. You Learn How to Refactor</h2>
+
+
+<p>I ended up with some code that worked, but was extremely slow</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;prime&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">first</span> <span class="n">way</span> <span class="n">is</span> <span class="n">very</span> <span class="n">slow</span>
+</span><span class='line'><span class="n">array</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'><span class="p">(</span><span class="mi">1</span><span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="mi">2000000</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">num</span><span class="o">|</span>
+</span><span class='line'>  <span class="k">if</span> <span class="n">num</span><span class="o">.</span><span class="n">prime?</span>
+</span><span class='line'>    <span class="n">array</span> <span class="o">&lt;&lt;</span> <span class="n">num</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">puts</span> <span class="n">array</span><span class="o">.</span><span class="n">reduce</span><span class="p">{</span> <span class="o">|</span><span class="n">sum</span><span class="p">,</span> <span class="n">n</span><span class="o">|</span> <span class="n">sum</span> <span class="o">+</span> <span class="n">n</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>At this point, I let myself go on the internet and try to find a way to refactor. I stumbled upon the ruby prime guide and realized that the prime module had more functionality that I could use to speed up my program. Here is my new code that I made after doing that research:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">array</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'><span class="no">Prime</span><span class="o">.</span><span class="n">each</span><span class="p">(</span><span class="mi">2000000</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">prime</span><span class="o">|</span>
+</span><span class='line'>  <span class="n">array</span> <span class="o">&lt;&lt;</span> <span class="n">prime</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">puts</span> <span class="n">array</span><span class="o">.</span><span class="n">reduce</span><span class="p">{</span> <span class="o">|</span><span class="n">sum</span><span class="p">,</span> <span class="n">n</span><span class="o">|</span> <span class="n">sum</span> <span class="o">+</span> <span class="n">n</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It turns out that Prime is a class that is basically an array of every prime number. Since I am now only iterating over prime numbers as opposed to all numbers, my program went considerably faster - running in about half a minute as opposed to the several minutes it took to run the original. Refactoring is a concept that some people get intimidated by, but by starting small and taking baby steps you can build up confidence to take on more challenging problems like refactoring huge controllers in rails.</p>
+
+<p>So to all those on the fence about trying <a href="http://projecteuler.net/">Project Euler</a> - I say GO DO IT!</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -344,6 +478,10 @@
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/03/28/top-3-reasons-to-try-project-euler/">Top 3 Reasons To Try Project Euler</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/02/26/its-reduce/">It&#8217;s Reduce, not Inject</a>
