@@ -4,7 +4,7 @@
   <title><![CDATA[Learning To Code]]></title>
   <link href="http://andrewcallahan.github.com/atom.xml" rel="self"/>
   <link href="http://andrewcallahan.github.com/"/>
-  <updated>2013-03-28T09:32:00-04:00</updated>
+  <updated>2013-03-28T09:33:05-04:00</updated>
   <id>http://andrewcallahan.github.com/</id>
   <author>
     <name><![CDATA[Andrew Callahan]]></name>
@@ -22,15 +22,14 @@
 
 <p>I&#8217;ve been going through these problems over the last few weeks and have a <a href="https://github.com/andrewcallahan/projecteuler">git repository</a> of my work. I&#8217;ll take the problem I finished last night, and use it to show what I&#8217;ve been able to learn.</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Summation</span> <span class="n">of</span> <span class="n">primes</span>
-</span><span class='line'><span class="no">Problem</span> <span class="mi">10</span>
-</span><span class='line'><span class="no">The</span> <span class="n">sum</span> <span class="n">of</span> <span class="n">the</span> <span class="n">primes</span> <span class="n">below</span> <span class="mi">10</span> <span class="n">is</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">+</span> <span class="mi">5</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">=</span> <span class="mi">17</span><span class="o">.</span>
-</span><span class='line'><span class="no">Find</span> <span class="n">the</span> <span class="n">sum</span> <span class="n">of</span> <span class="n">all</span> <span class="n">the</span> <span class="n">primes</span> <span class="n">below</span> <span class="n">two</span> <span class="n">million</span><span class="o">.</span>
-</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Summation of primes
+</span><span class='line'>Problem 10
+</span><span class='line'>The sum of the primes below 10 is 2 + 3 + 5 + 7 = 17.
+</span><span class='line'>Find the sum of all the primes below two million.</span></code></pre></td></tr></table></div></figure>
 
 
 
@@ -47,22 +46,20 @@
 
 <p>Here is how I broke down this problem.</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="mi">1</span><span class="o">.</span> <span class="n">find</span> <span class="n">all</span> <span class="n">prime</span> <span class="n">numbers</span> <span class="n">under</span> <span class="mi">2</span><span class="p">,</span><span class="mo">000</span><span class="p">,</span><span class="mo">000</span>
-</span><span class='line'><span class="mi">2</span><span class="o">.</span> <span class="n">take</span> <span class="n">all</span> <span class="n">these</span> <span class="n">numbers</span> <span class="ow">and</span> <span class="n">add</span> <span class="n">them</span> <span class="n">together</span>
-</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>1. find all prime numbers under 2,000,000
+</span><span class='line'>2. take all these numbers and add them together</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Once I started the first step I realized I could break it down further.</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">a</span><span class="o">.</span> <span class="no">Find</span> <span class="n">all</span> <span class="n">the</span> <span class="n">numbers</span> <span class="n">under</span> <span class="mi">2</span><span class="p">,</span><span class="mo">000</span><span class="p">,</span><span class="mo">000</span>
-</span><span class='line'><span class="n">b</span><span class="o">.</span> <span class="no">Check</span> <span class="k">if</span> <span class="n">each</span> <span class="n">one</span> <span class="n">is</span> <span class="n">prime</span>
-</span><span class='line'><span class="n">c</span><span class="o">.</span> <span class="no">If</span> <span class="n">it</span> <span class="n">is</span> <span class="n">prime</span><span class="p">,</span> <span class="n">add</span> <span class="n">it</span> <span class="n">into</span> <span class="n">an</span> <span class="n">array</span>
-</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>a. Find all the numbers under 2,000,000
+</span><span class='line'>b. Check if each one is prime
+</span><span class='line'>c. If it is prime, add it into an array</span></code></pre></td></tr></table></div></figure>
 
 
 <p>For the second step, I already knew that what I was doing (taking an array and adding it together) perfectly fit the pattern of reduce, and so didn&#8217;t need to further break it down. <a href="http://shitavisays.tumblr.com/post/45674233231/you-just-have-to-start-memorizing-these-and">Avi</a> should be proud that I&#8217;ve developed this kind of intuition.</p>
