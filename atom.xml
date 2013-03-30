@@ -4,7 +4,7 @@
   <title><![CDATA[Learning To Code]]></title>
   <link href="http://andrewcallahan.github.com/atom.xml" rel="self"/>
   <link href="http://andrewcallahan.github.com/"/>
-  <updated>2013-03-28T16:39:00-04:00</updated>
+  <updated>2013-03-30T14:19:48-04:00</updated>
   <id>http://andrewcallahan.github.com/</id>
   <author>
     <name><![CDATA[Andrew Callahan]]></name>
@@ -12,6 +12,418 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Saturday Morning Ruby]]></title>
+    <link href="http://andrewcallahan.github.com/blog/2013/03/30/saturday-morning-ruby/"/>
+    <updated>2013-03-30T12:50:00-04:00</updated>
+    <id>http://andrewcallahan.github.com/blog/2013/03/30/saturday-morning-ruby</id>
+    <content type="html"><![CDATA[<p>I&#8217;ve been immersed in Rails for a few weeks now. It&#8217;s been great, but it has come at the expense of pushing ahead and learning more about Ruby. I decided to go back and do another Project Euler problem this week, but it was a bit too easy. Today I took on a more challenging problem, and spent all morning getting it to work.</p>
+
+<p>Project Euler
+Problem 11</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>In the 2020 grid below, four numbers along a diagonal line have been marked in red.
+</span><span class='line'>
+</span><span class='line'>08 02 22 97 38 15 00 40 00 75 04 05 07 78 52 12 50 77 91 08
+</span><span class='line'>49 49 99 40 17 81 18 57 60 87 17 40 98 43 69 48 04 56 62 00
+</span><span class='line'>81 49 31 73 55 79 14 29 93 71 40 67 53 88 30 03 49 13 36 65
+</span><span class='line'>52 70 95 23 04 60 11 42 69 24 68 56 01 32 56 71 37 02 36 91
+</span><span class='line'>22 31 16 71 51 67 63 89 41 92 36 54 22 40 40 28 66 33 13 80
+</span><span class='line'>24 47 32 60 99 03 45 02 44 75 33 53 78 36 84 20 35 17 12 50
+</span><span class='line'>32 98 81 28 64 23 67 10 26 38 40 67 59 54 70 66 18 38 64 70
+</span><span class='line'>67 26 20 68 02 62 12 20 95 63 94 39 63 08 40 91 66 49 94 21
+</span><span class='line'>24 55 58 05 66 73 99 26 97 17 78 78 96 83 14 88 34 89 63 72
+</span><span class='line'>21 36 23 09 75 00 76 44 20 45 35 14 00 61 33 97 34 31 33 95
+</span><span class='line'>78 17 53 28 22 75 31 67 15 94 03 80 04 62 16 14 09 53 56 92
+</span><span class='line'>16 39 05 42 96 35 31 47 55 58 88 24 00 17 54 24 36 29 85 57
+</span><span class='line'>86 56 00 48 35 71 89 07 05 44 44 37 44 60 21 58 51 54 17 58
+</span><span class='line'>19 80 81 68 05 94 47 69 28 73 92 13 86 52 17 77 04 89 55 40
+</span><span class='line'>04 52 08 83 97 35 99 16 07 97 57 32 16 26 26 79 33 27 98 66
+</span><span class='line'>88 36 68 87 57 62 20 72 03 46 33 67 46 55 12 32 63 93 53 69
+</span><span class='line'>04 42 16 73 38 25 39 11 24 94 72 18 08 46 29 32 40 62 76 36
+</span><span class='line'>20 69 36 41 72 30 23 88 34 62 99 69 82 67 59 85 74 04 36 16
+</span><span class='line'>20 73 35 29 78 31 90 01 74 31 49 71 48 86 81 16 23 57 05 54
+</span><span class='line'>01 70 54 71 83 51 54 69 16 92 33 48 61 43 52 01 89 19 67 48
+</span><span class='line'>The product of these numbers is 26  63  78  14 = 1788696.
+</span><span class='line'>
+</span><span class='line'>What is the greatest product of four adjacent numbers in the same direction (up, down, left, right, or diagonally) in the 2020 grid?</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h2>1. Take grid and turn it into an array</h2>
+
+
+<p>I obviously needed to be able to access each value, and was pretty sure they had to be integers as I had plans to perform mathematical operations on them later on.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">grid</span> <span class="o">=</span> <span class="s2">&quot;08 02 22 97 38 15 00 40 00 75 04 05 07 78 52 12 50 77 91 08</span>
+</span><span class='line'><span class="s2">        49 49 99 40 17 81 18 57 60 87 17 40 98 43 69 48 04 56 62 00</span>
+</span><span class='line'><span class="s2">        81 49 31 73 55 79 14 29 93 71 40 67 53 88 30 03 49 13 36 65</span>
+</span><span class='line'><span class="s2">        52 70 95 23 04 60 11 42 69 24 68 56 01 32 56 71 37 02 36 91</span>
+</span><span class='line'><span class="s2">        22 31 16 71 51 67 63 89 41 92 36 54 22 40 40 28 66 33 13 80</span>
+</span><span class='line'><span class="s2">        24 47 32 60 99 03 45 02 44 75 33 53 78 36 84 20 35 17 12 50</span>
+</span><span class='line'><span class="s2">        32 98 81 28 64 23 67 10 26 38 40 67 59 54 70 66 18 38 64 70</span>
+</span><span class='line'><span class="s2">        67 26 20 68 02 62 12 20 95 63 94 39 63 08 40 91 66 49 94 21</span>
+</span><span class='line'><span class="s2">        24 55 58 05 66 73 99 26 97 17 78 78 96 83 14 88 34 89 63 72</span>
+</span><span class='line'><span class="s2">        21 36 23 09 75 00 76 44 20 45 35 14 00 61 33 97 34 31 33 95</span>
+</span><span class='line'><span class="s2">        78 17 53 28 22 75 31 67 15 94 03 80 04 62 16 14 09 53 56 92</span>
+</span><span class='line'><span class="s2">        16 39 05 42 96 35 31 47 55 58 88 24 00 17 54 24 36 29 85 57</span>
+</span><span class='line'><span class="s2">        86 56 00 48 35 71 89 07 05 44 44 37 44 60 21 58 51 54 17 58</span>
+</span><span class='line'><span class="s2">        19 80 81 68 05 94 47 69 28 73 92 13 86 52 17 77 04 89 55 40</span>
+</span><span class='line'><span class="s2">        04 52 08 83 97 35 99 16 07 97 57 32 16 26 26 79 33 27 98 66</span>
+</span><span class='line'><span class="s2">        88 36 68 87 57 62 20 72 03 46 33 67 46 55 12 32 63 93 53 69</span>
+</span><span class='line'><span class="s2">        04 42 16 73 38 25 39 11 24 94 72 18 08 46 29 32 40 62 76 36</span>
+</span><span class='line'><span class="s2">        20 69 36 41 72 30 23 88 34 62 99 69 82 67 59 85 74 04 36 16</span>
+</span><span class='line'><span class="s2">        20 73 35 29 78 31 90 01 74 31 49 71 48 86 81 16 23 57 05 54</span>
+</span><span class='line'><span class="s2">        01 70 54 71 83 51 54 69 16 92 33 48 61 43 52 01 89 19 67 48&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">collect</span> <span class="p">{</span> <span class="o">|</span><span class="n">string</span><span class="o">|</span> <span class="n">string</span><span class="o">.</span><span class="n">to_i</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h2>2. Figure out mathematical plan</h2>
+
+
+<p>Rereading the instructions I determined there were four ways (horizontal, vertical, diagonal-right and diagonal-left) that combinations of numbers would be possible. Instead of trying to do this all at once and make one huge class with lots of sub methods, I decided that I would try each method one-by-one and if it produced the correct answer, I would stop.</p>
+
+<h2>3. Horizontal Combinations</h2>
+
+
+<p>This was the easiest, so I did it first.</p>
+
+<p>First I tried to find the product of the first 4 numbers.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">sum</span> <span class="o">=</span> <span class="n">grid</span><span class="o">[</span><span class="mi">0</span><span class="o">.</span><span class="n">.</span><span class="mi">3</span><span class="o">].</span><span class="n">reduce</span><span class="p">{</span> <span class="o">|</span><span class="n">product</span><span class="p">,</span> <span class="n">n</span><span class="o">|</span> <span class="n">product</span> <span class="o">*</span> <span class="n">n</span> <span class="p">}</span>
+</span><span class='line'><span class="nb">puts</span> <span class="n">sum</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once I was able to do this for the first 4 numbers, I tried to see if I could do this for any adjacent combiantion of 4 numbers in the first row</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'><span class="n">finish</span> <span class="o">=</span> <span class="mi">3</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">until</span> <span class="n">finish</span> <span class="o">&gt;</span> <span class="mi">19</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">sum</span> <span class="o">=</span> <span class="n">grid</span><span class="o">[</span><span class="n">start</span><span class="o">.</span><span class="n">.finish</span><span class="o">].</span><span class="n">reduce</span><span class="p">{</span> <span class="o">|</span><span class="n">product</span><span class="p">,</span> <span class="n">n</span><span class="o">|</span> <span class="n">product</span> <span class="o">*</span> <span class="n">n</span> <span class="p">}</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="n">sum</span>
+</span><span class='line'>  <span class="n">start</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="n">finish</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then I figured out which product of all of these combinations was the greatest in value. As I went further down the rabbit hole I realized it would be helpful to encapsulate this logic into a method, which I did.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">find_largest_product</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>  <span class="n">finish</span> <span class="o">=</span> <span class="mi">3</span>
+</span><span class='line'>  <span class="n">greatest</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">until</span> <span class="n">finish</span> <span class="o">&gt;</span> <span class="mi">19</span> <span class="o">||</span> <span class="n">finish</span> <span class="o">&gt;</span> <span class="n">array</span><span class="o">.</span><span class="n">size</span> <span class="k">do</span>
+</span><span class='line'>  <span class="c1"># I added the &#39;|| finish &gt; array.size&#39; on the line above once I got to the diagonal lines and had to deal with arrays of varying size.</span>
+</span><span class='line'>    <span class="n">sum</span> <span class="o">=</span> <span class="n">array</span><span class="o">[</span><span class="n">start</span><span class="o">.</span><span class="n">.finish</span><span class="o">].</span><span class="n">reduce</span><span class="p">{</span> <span class="o">|</span><span class="n">product</span><span class="p">,</span> <span class="n">n</span><span class="o">|</span> <span class="n">product</span> <span class="o">*</span> <span class="n">n</span> <span class="p">}</span>
+</span><span class='line'>    <span class="n">greatest</span> <span class="o">=</span> <span class="n">sum</span> <span class="k">if</span> <span class="n">sum</span> <span class="o">&gt;</span> <span class="n">greatest</span>
+</span><span class='line'>    <span class="n">start</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="n">finish</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  <span class="n">greatest</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>At this point I decided to split my array into nested arrays, with each nested array containing a row of 20 numbers.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">until</span> <span class="n">grid</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="n">is_a?</span> <span class="nb">Array</span>
+</span><span class='line'>  <span class="n">row</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">grid</span> <span class="o">&lt;&lt;</span> <span class="n">row</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once I had a nested array and a method to find the largest product, I then put the largest product of each row into a new array called answer, and then called the max method on that array to produce (what I hoped would be) the answer to the problem.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">answer</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'>  <span class="n">grid</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">array</span><span class="o">|</span>
+</span><span class='line'>    <span class="n">answer</span> <span class="o">&lt;&lt;</span> <span class="n">find_largest_product</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="nb">puts</span> <span class="n">answer</span><span class="o">.</span><span class="n">max</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Unfortunately, this was not the answer, and I had to move on and see if the solution would be a vertical combination.</p>
+
+<h2>4. Vertical Combinations</h2>
+
+
+<p>I now needed to make arrays of the columns from my origonal grid. I realized that I could just &#8216;shift&#8217; off the first element of each of the row arrays I had previously made, and combine them into a new nested array which contained all the columns of data.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">vertical</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'><span class="mi">20</span><span class="o">.</span><span class="n">times</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">column</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'>  <span class="n">grid</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">row</span><span class="o">|</span>
+</span><span class='line'>    <span class="n">item</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">shift</span>
+</span><span class='line'>    <span class="n">column</span> <span class="o">&lt;&lt;</span> <span class="n">item</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  <span class="n">vertical</span> <span class="o">&lt;&lt;</span> <span class="n">column</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once I had this new array, I then see what the largest product of 4 adjacet vertical numbers were. I essentially reused the code I did when I did this for the rows of data, just replacing what array I was using. Looking back I could have put this into it&#8217;s own method too.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="n">answers</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'>    <span class="n">vertical</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">array</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">answers</span> <span class="o">&lt;&lt;</span> <span class="n">find_largest_product</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>   <span class="nb">puts</span> <span class="n">answers</span><span class="o">.</span><span class="n">max</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As with the horizontal combinations, this did not produce the correct answer. I knew that I was now venturing into more difficult territory with diagonals, but I was so invested in figuring out this problem that I was actually pretty excited.</p>
+
+<h2>5. Diagonal-Right Combinations</h2>
+
+
+<p>I tried to figure out what I needed to do in my head, but it wasn&#8217;t working. I went into excel and started visualizing it all, which was tremendously helpful.</p>
+
+<p><img src="http://andrewcallahan.github.com/images/diagonal_right_excel.png"></p>
+
+<p>I ended up determing that what I would do is make arrays of all the diagonals that went down and to the right. The green diagonals on the bottom-left and top-right represent the first and last array, since arrays beyond them would be less than 4 numbers in size. I figured if I started at the bottom-left most array and worked my way up to the top right most array, I would get all the diagonals in one fell swoop.</p>
+
+<p>After some trial-and-error I was able to come up with a way to get all the numbers from a single diagonal line into an array, and then enapsulated it in a method called make_diagonal_array</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">make_diagonal_array</span><span class="p">(</span><span class="n">horizontal_array</span><span class="p">,</span> <span class="n">vertical</span><span class="p">,</span> <span class="n">horizontal</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">diagonal_array</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'>  <span class="k">until</span> <span class="n">vertical</span> <span class="o">&gt;</span> <span class="mi">19</span> <span class="o">||</span> <span class="n">horizontal</span> <span class="o">&gt;</span> <span class="mi">19</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">diagonal_array</span> <span class="o">&lt;&lt;</span> <span class="n">horizontal_array</span><span class="o">[</span><span class="n">vertical</span><span class="o">][</span><span class="n">horizontal</span><span class="o">]</span>
+</span><span class='line'>    <span class="n">vertical</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="n">horizontal</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  <span class="n">diagonal_array</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now that I could get a single diagonal array, I had to get all of them. I made a new array called diagonal, and shoveled each diagonal line onto it, again going from the bottom left most diagonal line to the top right most diagonal line. I used some of the same local varaible names that I used in the make_diagonal_array, which I call in the until loop. While this is a bit confusing, it was the least confusing way I could come up with at the time.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">diagonal</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'><span class="n">vertical</span> <span class="o">=</span> <span class="mi">16</span>
+</span><span class='line'><span class="n">horizontal</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">until</span> <span class="n">vertical</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">horizontal</span> <span class="o">&gt;</span> <span class="mi">16</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">diagonal</span> <span class="o">&lt;&lt;</span> <span class="n">make_diagonal_array</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">vertical</span><span class="p">,</span> <span class="n">horizontal</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">if</span> <span class="n">vertical</span> <span class="o">&gt;</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="n">vertical</span> <span class="o">-=</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="k">else</span>
+</span><span class='line'>    <span class="n">horizontal</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Hoping this would finally yield me the correct answer, I used the same code as I had done in the last two attempts.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">answer</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'>  <span class="n">diagonal</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">array</span><span class="o">|</span>
+</span><span class='line'>    <span class="n">answer</span> <span class="o">&lt;&lt;</span> <span class="n">find_largest_product</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="nb">puts</span> <span class="n">answer</span><span class="o">.</span><span class="n">max</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I suppose this was just my lucky day, since this did not produce the right answer. I then went on to try to final set of combiations: diagonal-left.</p>
+
+<h2>6. Diagonal-Left</h2>
+
+
+<p>For this step all I had to do was modify the code I made for diagonal-right. This time I would start at the top-left most diagonal and go down to the bottom-right most diagonal. This was suprisingly hard to wrap my head around, but I eventually did with enough fiddling.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">make_diagonal_array</span><span class="p">(</span><span class="n">horizontal_array</span><span class="p">,</span> <span class="n">vertical</span><span class="p">,</span> <span class="n">horizontal</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">diagonal_array</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'>  <span class="k">until</span> <span class="n">vertical</span> <span class="o">&gt;</span> <span class="mi">19</span> <span class="o">||</span> <span class="n">horizontal</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">diagonal_array</span> <span class="o">&lt;&lt;</span> <span class="n">horizontal_array</span><span class="o">[</span><span class="n">vertical</span><span class="o">][</span><span class="n">horizontal</span><span class="o">]</span>
+</span><span class='line'>    <span class="n">vertical</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="n">horizontal</span> <span class="o">-=</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  <span class="n">diagonal_array</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">diagonal</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'><span class="n">vertical</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'><span class="n">horizontal</span> <span class="o">=</span> <span class="mi">3</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">until</span> <span class="n">vertical</span> <span class="o">&gt;</span> <span class="mi">16</span> <span class="o">&amp;&amp;</span> <span class="n">horizontal</span> <span class="o">==</span> <span class="mi">19</span> <span class="k">do</span>
+</span><span class='line'><span class="n">diagonal</span> <span class="o">&lt;&lt;</span> <span class="n">make_diagonal_array</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">vertical</span><span class="p">,</span> <span class="n">horizontal</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">if</span> <span class="n">horizontal</span> <span class="o">&lt;=</span> <span class="mi">18</span>
+</span><span class='line'>    <span class="n">horizontal</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="k">else</span>
+</span><span class='line'>    <span class="n">vertical</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">answer</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'>  <span class="n">diagonal</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">array</span><span class="o">|</span>
+</span><span class='line'>    <span class="n">answer</span> <span class="o">&lt;&lt;</span> <span class="n">find_largest_product</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="nb">puts</span> <span class="n">answer</span><span class="o">.</span><span class="n">max</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>FINALLY!! I got the answer (it&#8217;s 70,600,674). This was quite a lot of work, but well worth it. If I were to do some serious refactoring, I could put this all into a class, further encapsulate these methods, and make it all work nicely as one program instead of 4 separate attempts. Perhaps another time though - I need to enjoy the rest of my Saturday!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Top 3 Reasons To Try Project Euler]]></title>

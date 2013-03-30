@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Learning To Code</title>
+  <title>Saturday Morning Ruby - Learning To Code</title>
   <meta name="author" content="Andrew Callahan">
 
   
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://andrewcallahan.github.com/">
+  <link rel="canonical" href="http://andrewcallahan.github.com/blog/2013/03/30/saturday-morning-ruby/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -62,15 +62,12 @@
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2013/03/30/saturday-morning-ruby/">Saturday Morning Ruby</a></h1>
+      <h1 class="entry-title">Saturday Morning Ruby</h1>
     
     
       <p class="meta">
@@ -93,7 +90,7 @@
   </header>
 
 
-  <div class="entry-content"><p>I&#8217;ve been immersed in Rails for a few weeks now. It&#8217;s been great, but it has come at the expense of pushing ahead and learning more about Ruby. I decided to go back and do another Project Euler problem this week, but it was a bit too easy. Today I took on a more challenging problem, and spent all morning getting it to work.</p>
+<div class="entry-content"><p>I&#8217;ve been immersed in Rails for a few weeks now. It&#8217;s been great, but it has come at the expense of pushing ahead and learning more about Ruby. I decided to go back and do another Project Euler problem this week, but it was a bit too easy. Today I took on a more challenging problem, and spent all morning getting it to work.</p>
 
 <p>Project Euler
 Problem 11</p>
@@ -498,159 +495,16 @@ Problem 11</p>
 
 <p>FINALLY!! I got the answer (it&#8217;s 70,600,674). This was quite a lot of work, but well worth it. If I were to do some serious refactoring, I could put this all into a class, further encapsulate these methods, and make it all work nicely as one program instead of 4 separate attempts. Perhaps another time though - I need to enjoy the rest of my Saturday!</p>
 </div>
-  
-  
 
 
-    </article>
-  
-  
-    <article>
+  <footer>
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/28/top-3-reasons-to-try-project-euler/">Top 3 Reasons to Try Project Euler</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
   
 
+<span class="byline author vcard">Posted by <span class="fn">Andrew Callahan</span></span>
 
-<time datetime="2013-03-28T09:13:00-04:00" pubdate data-updated="true">Mar 28<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>A few days before I started the Flatiron School, <a href="http://chickenriceplatter.github.com/">Dave</a> introduced me to <a href="http://projecteuler.net/">Project Euler</a>.</p>
-
-<p>This is a website with hundreds of math problems that you need to solve by building a comptuer program. It is named after the 18th century Swiss mathemetician <a href="http://en.wikipedia.org/wiki/Leonhard_Euler">Leonhard Euler</a>, who according to wikipedia is &#8220;one of the most prolific mathematicians ever&#8221;.</p>
-
-<p><img src="http://upload.wikimedia.org/wikipedia/commons/6/60/Leonhard_Euler_2.jpg" /></p>
-
-<p>While there is some disagreement over how to pronounce Euler (some say &#8216;oil-er&#8217;, some say &#8216;you-ler&#8217;), there is a broad consensus that this is a great way to learn how to become a better programmer. However many people are intimidated by this website, since it involves math.</p>
-
-<p>I&#8217;ve been going through these problems over the last few weeks and have a <a href="https://github.com/andrewcallahan/projecteuler">git repository</a> of my work. I can say that yes it is a bit challenging, but that you learn so much that you should stop worrying, and just start doing the problems. I&#8217;ll take the problem I finished last night, and use it to show what I&#8217;ve been able to learn.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Summation of primes
-</span><span class='line'>Problem 10
-</span><span class='line'>The sum of the primes below 10 is 2 + 3 + 5 + 7 = 17.
-</span><span class='line'>Find the sum of all the primes below two million.</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<h2>1. You Get A Math Refresher</h2>
-
-
-<p>Instead of being intimidated by hard math concepts, just view it as an opportunity to hone your math skills! Math was always one of my favotite subjects in school because it made sense, and if I worked hard enough I could find a definitive answer. Perhaps I&#8217;m a bit unique in this, but doing math problems is really fun for me. For this problem, I had to jog my memory about prime numbers. I remembered that prime numbers were numbers greater than 1 that had no other factors besides 1 and itself. Not anything enlightening, but good to know I still remember middle school math concepts.</p>
-
-<h2>2. You Are Forced To Break Down Problems</h2>
-
-
-<p>I then realized I needed to break this problem down into many smaller problems. This has been one of the most critical skills I&#8217;ve developed while at the Flatiron School. If you are unable to take a big problem and break it down into smaller sub-problems, you won&#8217;t be able to do much of anything in programming. Project Euler has been one of the best resources I&#8217;ve found to practice doign this.</p>
-
-<p>Here is how I broke down problem 10.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>1. find all prime numbers under 2,000,000
-</span><span class='line'>2. take all these numbers and add them together</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Once I started the first step I realized I could break it down further.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>a. Find all the numbers under 2,000,000
-</span><span class='line'>b. Check if each one is prime
-</span><span class='line'>c. If it is prime, add it into an array</span></code></pre></td></tr></table></div></figure>
-
-
-<p>For the second step, I already knew that what I was doing (taking an array and adding it together) perfectly fit the pattern of reduce, and so didn&#8217;t need to further break it down. <a href="http://shitavisays.tumblr.com/post/45674233231/you-just-have-to-start-memorizing-these-and">Avi</a> should be proud that I&#8217;ve developed this kind of intuition.</p>
-
-<h2>3. You Learn How to Refactor</h2>
-
-
-<p>I ended up with some code that worked (the answer is 142,913,828,922), but was extremely slow</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;prime&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">array</span> <span class="o">=</span> <span class="o">[]</span>
-</span><span class='line'><span class="p">(</span><span class="mi">1</span><span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="mi">2000000</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">num</span><span class="o">|</span>
-</span><span class='line'>  <span class="k">if</span> <span class="n">num</span><span class="o">.</span><span class="n">prime?</span>
-</span><span class='line'>    <span class="n">array</span> <span class="o">&lt;&lt;</span> <span class="n">num</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">puts</span> <span class="n">array</span><span class="o">.</span><span class="n">reduce</span><span class="p">{</span> <span class="o">|</span><span class="n">sum</span><span class="p">,</span> <span class="n">n</span><span class="o">|</span> <span class="n">sum</span> <span class="o">+</span> <span class="n">n</span> <span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>At this point, I let myself go on the internet and try to find a way to refactor. I stumbled upon the ruby prime guide and realized that the prime module had more functionality that I could use to speed up my program. Here is my new code that I made after doing that research:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">array</span> <span class="o">=</span> <span class="o">[]</span>
-</span><span class='line'><span class="no">Prime</span><span class="o">.</span><span class="n">each</span><span class="p">(</span><span class="mi">2000000</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">prime</span><span class="o">|</span>
-</span><span class='line'>  <span class="n">array</span> <span class="o">&lt;&lt;</span> <span class="n">prime</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">puts</span> <span class="n">array</span><span class="o">.</span><span class="n">reduce</span><span class="p">{</span> <span class="o">|</span><span class="n">sum</span><span class="p">,</span> <span class="n">n</span><span class="o">|</span> <span class="n">sum</span> <span class="o">+</span> <span class="n">n</span> <span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>It turns out that Prime is a class that is basically an array of every prime number. Since I am now only iterating over prime numbers as opposed to all numbers, my program went considerably faster - running in about half a minute as opposed to the several minutes it took to run the original.</p>
-
-<p>Refactoring is a concept that some people get intimidated by, but by starting small and taking baby steps you can build up confidence to take on more challenging problems like refactoring huge controllers in rails.</p>
-
-<p>So to all those on the fence about trying <a href="http://projecteuler.net/">Project Euler</a> - I say GO DO IT!</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/02/26/its-reduce/">It&#8217;s Reduce, Not Inject</a></h1>
-    
-    
-      <p class="meta">
-        
 
 
 
@@ -662,259 +516,34 @@ Problem 11</p>
   
 
 
-<time datetime="2013-02-26T10:00:00-05:00" pubdate data-updated="true">Feb 26<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>When I think of the term &#8216;inject&#8217;, I think of Ron Popeil&#8217;s Solid Flavor Injector - where you can literally put solid garlic cloves INTO a meat roast. Classy.</p>
-
-<iframe width="420" height="315" src="http://www.youtube.com/embed/lrccEj-nSXI" frameborder="0" allowfullscreen></iframe>
-
-
-<p>When I first came across Ruby&#8217;s method &#8216;Inject&#8217; I was very confused. The point of inject is to get rid of local variables that iterate when you want to do something simple like sum up the first 10 numbers.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="p">(</span><span class="mi">1</span><span class="o">.</span><span class="n">.</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">result</span><span class="p">,</span> <span class="n">element</span><span class="o">|</span> <span class="n">result</span> <span class="o">+</span> <span class="n">element</span> <span class="p">}</span>
-</span><span class='line'><span class="c1">#=&gt;55</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>But what this &#8216;Inject&#8217; method is really doing is reducing. Reducing a range of 10 numbers into just their one sum. Reducing the number of local variables you need to keep track of. Reducing the amount of code you need to write. This is why, even after I learned about inject, the name was still throwing me off. Then I discovered that &#8216;Reduce&#8217; is actually an alias to &#8216;Inject&#8217; in ruby! Thank you Matz for making me happy. I&#8217;ll be leaving the notion of injecting to Ron Popeil, and will write reduce methods in my code from now on.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
+<time datetime="2013-03-30T12:50:00-04:00" pubdate data-updated="true">Mar 30<span>th</span>, 2013</time>
       
-  <header>
+
+
+    </p>
     
-      <h1 class="entry-title"><a href="/blog/2013/02/26/how-i-made-curb-your-flombaum/">How I Made Curb Your Flombaum</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
+      <div class="sharing">
   
-
-
-<time datetime="2013-02-26T09:19:00-05:00" pubdate data-updated="true">Feb 26<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I&#8217;ve been at the flatiron school for about 3 weeks now. I&#8217;ve been learning so much - it&#8217;s really incredible how much progress I&#8217;ve been able to make in such a short period of time. This is in no small part due to the ability of Avi and Bob to both engage is in lectures and help us one-on-one when we get stuck. Part of being engaging in lectures though, has lead to some rather interesting things being said. Last semester the class started a <a href="http://shitavisays.tumblr.com/">blog</a> to keep track of such utterances. I&#8217;m proud to say our semester has not only kept up this tradition, but in just three weeks already surpassed the last class in terms of the number of blog posts!</p>
-
-<p>When I was asked to present to NYC on Rails, I knew that I was limited in my knowledge of programming, and had limited time to prepare since I was spending all day in class and all night studying and doing homework. I was supposed to find a topic, research it, and make a presentation. However I was determined to build something, no matter how small. On the first day of class, Avi ripped up his prepared lecture notes and said &#8216;we push code from day one&#8217; and had us make a commit to github.Curb. I came here to build things, and so build something I did.</p>
-
-<p>Curb Your Flombaum takes a random quote from the blog the class keeps about Avi, calls up my phone, and speaks it back to me. Here is how I did it.</p>
-
-<h2>1. Use feedzirra to parse XML and grab a random quote</h2>
-
-
-<p>There are lots of XML parsers out there, but I choose to use feedzirra because it seemed simple and had decent documentation. First, I had to require the Feedzira, Twilio, and Amazon S3 gems</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s2">&quot;feedzirra&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;twilio-ruby&#39;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;aws/s3&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Then to actually get the quote I had to set the entire XML feed into a variable</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">feed</span> <span class="o">=</span> <span class="ss">Feedzirra</span><span class="p">:</span><span class="ss">:Feed</span><span class="o">.</span><span class="n">fetch_and_parse</span><span class="p">(</span><span class="s1">&#39;http://shitavisays.tumblr.com/rss&#39;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>From there I could just select a random entry be calling .sample and get just the title element (omitting any comments made beyond just Avi&#8217;s quote). The code will look like this</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">feed</span><span class="o">.</span><span class="n">entries</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">to_s</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<h2>2. Convert the random quote to an xml file</h2>
-
-
-<p>I now have the code that will give me back a string of a random Avi quote, but I need to put it in an actual XML file. To do that I&#8217;m first setting a variable xml to a string. This string is in the TwiML format, which I learned about using twillo&#8217;s excellent documentation. Twilio will automatically play an mp3 file if you wrap the url for the file in a <Play> command. Similarly Twilio will turn any text you wrap in a <Say> command into speech. Notice that I&#8217;ve put a \ before the quotes inside this string. I&#8217;m doing this to escape the characters so that ruby doesn&#8217;t prematurely end my string.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">xml</span> <span class="o">=</span> <span class="s2">&quot;&lt;?xml version=</span><span class="se">\&quot;</span><span class="s2">1.0</span><span class="se">\&quot;</span><span class="s2"> encoding=</span><span class="se">\&quot;</span><span class="s2">UTF-8</span><span class="se">\&quot;</span><span class="s2">?&gt;</span>
-</span><span class='line'><span class="s2">&lt;Response&gt;</span>
-</span><span class='line'><span class="s2">  &lt;Play&gt;https://s3.amazonaws.com/NYConRails/intro.mp3&lt;/Play&gt;</span>
-</span><span class='line'><span class="s2">  &lt;Pause length=</span><span class="se">\&quot;</span><span class="s2">0.5</span><span class="se">\&quot;</span><span class="s2">/&gt;</span>
-</span><span class='line'><span class="s2">  &lt;Say voice=</span><span class="se">\&quot;</span><span class="s2">woman</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="si">#{</span><span class="n">feed</span><span class="o">.</span><span class="n">entries</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">to_s</span><span class="si">}</span><span class="s2">&lt;/Say&gt;</span>
-</span><span class='line'><span class="s2">  &lt;Pause length=</span><span class="se">\&quot;</span><span class="s2">0.5</span><span class="se">\&quot;</span><span class="s2">/&gt;</span>
-</span><span class='line'><span class="s2">  &lt;Play&gt;https://s3.amazonaws.com/NYConRails/exit.mp3&lt;/Play&gt;</span>
-</span><span class='line'><span class="s2">&lt;/Response&gt;&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<h2>3. Save the file to my computer</h2>
-
-
-<p>Now that I have a dynamic variable for what an XML file would contain, I need to save it to my computer. Ruby&#8217;s official documentation made this task relatively easy.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;call.xml&#39;</span><span class="p">,</span> <span class="s1">&#39;w+&#39;</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
-</span><span class='line'>  <span class="n">f</span><span class="o">.</span><span class="n">puts</span> <span class="n">xml</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<h2>4. Upload the file to Amazon S3</h2>
-
-
-<p>Each time I run the program, I now have a new file called &#8216;call.xml&#8217; that is saved to my computer. Each time it will include a new random Avi quote. I now need to host this file on the internet in order for Twilio to be able to work. I tried a lot of different solutions, but ultimately Amazon S3 was what I went with.  I made an account, created a &#8216;bucket&#8217; to store my files, and then was able to write more code. First I had to put in my credentials</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="ss">AWS</span><span class="p">:</span><span class="ss">:S3</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">establish_connection!</span><span class="p">(</span>
-</span><span class='line'>  <span class="ss">:access_key_id</span>     <span class="o">=&gt;</span> <span class="s1">&#39;SDF7FS7DFS202S2LKSDS&#39;</span><span class="p">,</span> <span class="c1"># &lt;-- put in your own, this is a fake one</span>
-</span><span class='line'>  <span class="ss">:secret_access_key</span> <span class="o">=&gt;</span> <span class="s1">&#39;ASFDHSADF23HSDFASDFJSSX722iaf28#sdfsdf2&#39;</span> <span class="c1"># &lt;-- put in your own, this is a fake one</span>
-</span><span class='line'><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Then I had to actually upload the file to S3</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">file</span> <span class="o">=</span> <span class="s1">&#39;call.xml&#39;</span>
-</span><span class='line'>  <span class="ss">AWS</span><span class="p">:</span><span class="ss">:S3</span><span class="o">::</span><span class="no">S3Object</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">),</span> <span class="s1">&#39;NYConRails&#39;</span><span class="p">,</span> <span class="ss">:access</span> <span class="o">=&gt;</span> <span class="ss">:public_read</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Amazon&#8217;s official documentation left out the &#8216;AWS::S3&#8217; prefix, which I had to figure out on my own. I also just made a guess on how to make the file public (it&#8217;s private by default), so they could improve that part of the documentation as well.</p>
-
-<h2>5. Use Twilio to convert the text into speech and call my phone</h2>
-
-
-<p>Now that I have an XML file with a random Avi quote hosted on the internet, I need to configure Twilio to do it&#8217;s magic. First I set my my credentials</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">account_sid</span> <span class="o">=</span> <span class="s1">&#39;JH96987LKJLKJLKJsadfasdf3323423sfasd&#39;</span> <span class="c1"># &lt;-- put in your own, this is a fake one</span>
-</span><span class='line'><span class="n">auth_token</span> <span class="o">=</span> <span class="s1">&#39;98273234sdf2342309sd0f9s8fd980s3&#39;</span> <span class="c1"># &lt;-- put in your own, this is a fake one</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Then I set up a client to talk to the Twilio REST API</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="vi">@client</span> <span class="o">=</span> <span class="ss">Twilio</span><span class="p">:</span><span class="ss">:REST</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span> <span class="n">account_sid</span><span class="p">,</span> <span class="n">auth_token</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Finally I give twilio instructions on what I want it to do. I want it to call my phone (the to:) using the phone number i have associated with the account (the from:) using the instructions in TwiML format I have hosted on S3 (the url:). At first this did not work, but I asked Twilio for help and they got back to me saying I needed to specify that this was a GET request (the method:).</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="vi">@call</span> <span class="o">=</span> <span class="vi">@client</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">calls</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
-</span><span class='line'>  <span class="ss">:from</span> <span class="o">=&gt;</span> <span class="s1">&#39;+12129983322&#39;</span><span class="p">,</span> <span class="c1"># &lt;-- put in your own (must be the one linked to your twilio account), this is a fake one</span>
-</span><span class='line'>  <span class="ss">:to</span> <span class="o">=&gt;</span> <span class="s1">&#39;+12123340076&#39;</span><span class="p">,</span> <span class="c1"># &lt;-- put in whatever phone number you want to call, this is a fake one</span>
-</span><span class='line'>  <span class="ss">:url</span> <span class="o">=&gt;</span> <span class="s1">&#39;https://s3.amazonaws.com/NYConRails/call.xml&#39;</span><span class="p">,</span> <span class="c1"># &lt;-- put in your own, if you use S3 it will just be https://s3.amazonaws.com/YOUR_BUCKET_NAME/call.xml</span>
-</span><span class='line'>  <span class="ss">:method</span> <span class="o">=&gt;</span> <span class="s1">&#39;GET&#39;</span>
-</span><span class='line'><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<h2>In conclusion</h2>
-
-
-<p>So there is how I made Curb Your Flombaum. I have open sourced the project at <a href="https://github.com/andrewcallahan/curbyourflombaum">github</a>, and would love anyone to take this code and run with it. I have a lot of ideas for improving this app - maybe making the ability to sign up to get Avi quotes sent to your phone as they come in. However this was an MVP for a demo, and I&#8217;m proud to have done this after learning how to code for just three weeks.</p>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://andrewcallahan.github.com/blog/2013/03/30/saturday-morning-ruby/" data-via="andrewcallahan" data-counturl="http://andrewcallahan.github.com/blog/2013/03/30/saturday-morning-ruby/" >Tweet</a>
+  
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
 </div>
-  
-  
 
-
-    </article>
-  
-  
-    <article>
+    
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/02/05/hello-world/">Hello World</a></h1>
-    
-    
-      <p class="meta">
-        
+        <a class="basic-alignment left" href="/blog/2013/03/28/top-3-reasons-to-try-project-euler/" title="Previous Post: Top 3 Reasons To Try Project Euler">&laquo; Top 3 Reasons To Try Project Euler</a>
+      
+      
+    </p>
+  </footer>
+</article>
 
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-02-05T21:50:00-05:00" pubdate data-updated="true">Feb 5<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content">
 </div>
-  
-  
 
-
-    </article>
-  
-  <div class="pagination">
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
 <aside class="sidebar">
   
     <section>
@@ -930,7 +559,7 @@ Problem 11</p>
       </li>
     
       <li class="post">
-        <a href="/blog/2013/02/26/its-reduce/">It&#8217;s Reduce, not Inject</a>
+        <a href="/blog/2013/02/26/its-reduce/">It's Reduce, not Inject</a>
       </li>
     
       <li class="post">
@@ -947,7 +576,7 @@ Problem 11</p>
 <section>
   <h1>GitHub Repos</h1>
   <ul id="gh_repos">
-    <li class="loading">Status updating&#8230;</li>
+    <li class="loading">Status updating...</li>
   </ul>
   
   <a href="https://github.com/andrewcallahan">@andrewcallahan</a> on GitHub
@@ -977,7 +606,7 @@ Problem 11</p>
 <section>
   <h1>Latest Tweets</h1>
   <ul id="tweets">
-    <li class="loading">Status updating&#8230;</li>
+    <li class="loading">Status updating...</li>
   </ul>
   <script type="text/javascript">
     $.domReady(function(){
@@ -996,6 +625,7 @@ Problem 11</p>
 
   
 </aside>
+
 
     </div>
   </div>
