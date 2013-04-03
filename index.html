@@ -9,7 +9,7 @@
   <meta name="author" content="Andrew Callahan">
 
   
-  <meta name="description" content="I&#8217;ve been immersed in Rails for a few weeks now. It&#8217;s been great, but it has come at the expense of pushing ahead and learning more about &hellip;">
+  <meta name="description" content="reopening the fixnum class When doing Project Euler prolem #14 I was running into a problem. I wrote a method that took a number and returned the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +64,134 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/04/03/reopening-the-fixnum-class/">Reopening the Fixnum Class</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-03T09:45:00-04:00" pubdate data-updated="true">Apr 3<span>rd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>reopening the fixnum class</p>
+
+<p>When doing Project Euler prolem #14 I was running into a problem. I wrote a method that took a number and returned the length of it&#8217;s Collatz sequence.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">collatz</span>
+</span><span class='line'>  <span class="n">array</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'>  <span class="n">array</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
+</span><span class='line'>  <span class="k">until</span> <span class="n">array</span><span class="o">.</span><span class="n">last</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">do</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">odd?</span>
+</span><span class='line'>      <span class="n">array</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">last</span><span class="o">*</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="n">array</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">last</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  <span class="n">array</span><span class="o">.</span><span class="n">count</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I was pretty sure the logic was correct, but when I ran it on a random number it generated a strange error.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="kp">private</span> <span class="nb">method</span> <span class="sb">`collatz&#39; called for 12:Fixnum (NoMethodError)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I tried a bunch of different approaches to solve this, but none of them were working. I eventually realized that my method needed to be part of a class. I made a new class called Collatz and made each number a new instance of that class. After half an hour of nothing but error messages I decided I needed a new approach.</p>
+
+<p>Without an internet connection I couldn&#8217;t just google the problem, so I thought a bit more. It dawned on me that numbers are already objects (since everything in Ruby is an object) and that they are already part of the Fixnum class.</p>
+
+<p>I&#8217;ve never modified a core Ruby class or &#8216;reopened&#8217; a class before, but I did vaguely remember learning aobut this in a lecture a few weeks ago. So I decided to just reopen the Fixnum class and add this new method.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Fixnum</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">collatz</span>
+</span><span class='line'>    <span class="n">array</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'>    <span class="n">array</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
+</span><span class='line'>    <span class="k">until</span> <span class="n">array</span><span class="o">.</span><span class="n">last</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">do</span>
+</span><span class='line'>      <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">odd?</span>
+</span><span class='line'>        <span class="n">array</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">last</span><span class="o">*</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">else</span>
+</span><span class='line'>        <span class="n">array</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">last</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="n">array</span><span class="o">.</span><span class="n">count</span>
+</span><span class='line'>    <span class="c1"># puts &quot;#{self} has #{array.count} numbers in it&#39;s sequence&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I tired it out on a test number and it worked! Victory! All that was left was to iterate over the first million numbers and determine which one had the longest Collatz sequence.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">array</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'><span class="p">(</span><span class="mi">1</span><span class="o">.</span><span class="n">.</span><span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">number</span><span class="o">|</span>
+</span><span class='line'>  <span class="n">array</span> <span class="o">&lt;&lt;</span> <span class="n">number</span><span class="o">.</span><span class="n">collatz</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="nb">puts</span> <span class="n">array</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">max</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The program I build determiend correctly that out of the first million numbers - 837,799 has the longest Collatz sequence. My code could be optimized further - it takes a good minute to run now. That would involved determining which numbers I don&#8217;t need to iterate over - for instance it seems that even numbers generally (but not always) have longer sequences as you increase, and that odd numbers generally have longer sequences than even numbers.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -922,6 +1050,10 @@ Problem 11</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/04/03/reopening-the-fixnum-class/">Reopening The Fixnum Class</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/03/30/saturday-morning-ruby/">Saturday Morning Ruby</a>
       </li>
     
@@ -935,10 +1067,6 @@ Problem 11</p>
     
       <li class="post">
         <a href="/blog/2013/02/26/how-i-made-curb-your-flombaum/">How I Made Curb Your Flombaum</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/02/05/hello-world/">Hello World</a>
       </li>
     
   </ul>

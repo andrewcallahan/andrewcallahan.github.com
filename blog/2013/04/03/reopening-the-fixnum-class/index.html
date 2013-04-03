@@ -1,0 +1,359 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Reopening The Fixnum Class - Learning To Code</title>
+  <meta name="author" content="Andrew Callahan">
+
+  
+  <meta name="description" content="reopening the fixnum class When doing Project Euler prolem #14 I was running into a problem. I wrote a method that took a number and returned the &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://andrewcallahan.github.com/blog/2013/04/03/reopening-the-fixnum-class/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Learning To Code" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Learning To Code</a></h1>
+  
+    <h2>Join me as I take the plunge!</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:andrewcallahan.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Reopening the Fixnum Class</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-03T09:45:00-04:00" pubdate data-updated="true">Apr 3<span>rd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>reopening the fixnum class</p>
+
+<p>When doing Project Euler prolem #14 I was running into a problem. I wrote a method that took a number and returned the length of it&#8217;s Collatz sequence.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">collatz</span>
+</span><span class='line'>  <span class="n">array</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'>  <span class="n">array</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
+</span><span class='line'>  <span class="k">until</span> <span class="n">array</span><span class="o">.</span><span class="n">last</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">do</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">odd?</span>
+</span><span class='line'>      <span class="n">array</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">last</span><span class="o">*</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="n">array</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">last</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  <span class="n">array</span><span class="o">.</span><span class="n">count</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I was pretty sure the logic was correct, but when I ran it on a random number it generated a strange error.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="kp">private</span> <span class="nb">method</span> <span class="sb">`collatz&#39; called for 12:Fixnum (NoMethodError)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I tried a bunch of different approaches to solve this, but none of them were working. I eventually realized that my method needed to be part of a class. I made a new class called Collatz and made each number a new instance of that class. After half an hour of nothing but error messages I decided I needed a new approach.</p>
+
+<p>Without an internet connection I couldn&#8217;t just google the problem, so I thought a bit more. It dawned on me that numbers are already objects (since everything in Ruby is an object) and that they are already part of the Fixnum class.</p>
+
+<p>I&#8217;ve never modified a core Ruby class or &#8216;reopened&#8217; a class before, but I did vaguely remember learning aobut this in a lecture a few weeks ago. So I decided to just reopen the Fixnum class and add this new method.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Fixnum</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">collatz</span>
+</span><span class='line'>    <span class="n">array</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'>    <span class="n">array</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
+</span><span class='line'>    <span class="k">until</span> <span class="n">array</span><span class="o">.</span><span class="n">last</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">do</span>
+</span><span class='line'>      <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">odd?</span>
+</span><span class='line'>        <span class="n">array</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">last</span><span class="o">*</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">else</span>
+</span><span class='line'>        <span class="n">array</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">last</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="n">array</span><span class="o">.</span><span class="n">count</span>
+</span><span class='line'>    <span class="c1"># puts &quot;#{self} has #{array.count} numbers in it&#39;s sequence&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I tired it out on a test number and it worked! Victory! All that was left was to iterate over the first million numbers and determine which one had the longest Collatz sequence.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">array</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'><span class="p">(</span><span class="mi">1</span><span class="o">.</span><span class="n">.</span><span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">number</span><span class="o">|</span>
+</span><span class='line'>  <span class="n">array</span> <span class="o">&lt;&lt;</span> <span class="n">number</span><span class="o">.</span><span class="n">collatz</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="nb">puts</span> <span class="n">array</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">max</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The program I build determiend correctly that out of the first million numbers - 837,799 has the longest Collatz sequence. My code could be optimized further - it takes a good minute to run now. That would involved determining which numbers I don&#8217;t need to iterate over - for instance it seems that even numbers generally (but not always) have longer sequences as you increase, and that odd numbers generally have longer sequences than even numbers.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Andrew Callahan</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-03T09:45:00-04:00" pubdate data-updated="true">Apr 3<span>rd</span>, 2013</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://andrewcallahan.github.com/blog/2013/04/03/reopening-the-fixnum-class/" data-via="andrewcallahan" data-counturl="http://andrewcallahan.github.com/blog/2013/04/03/reopening-the-fixnum-class/" >Tweet</a>
+  
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/03/30/saturday-morning-ruby/" title="Previous Post: Saturday Morning Ruby">&laquo; Saturday Morning Ruby</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/04/03/reopening-the-fixnum-class/">Reopening The Fixnum Class</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/03/30/saturday-morning-ruby/">Saturday Morning Ruby</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/03/28/top-3-reasons-to-try-project-euler/">Top 3 Reasons To Try Project Euler</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/02/26/its-reduce/">It's Reduce, not Inject</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/02/26/how-i-made-curb-your-flombaum/">How I Made Curb Your Flombaum</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/andrewcallahan">@andrewcallahan</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'andrewcallahan',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("andrewcallahan", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/andrewcallahan" class="twitter-follow-button" data-show-count="false">Follow @andrewcallahan</a>
+  
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Andrew Callahan -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
