@@ -4,7 +4,7 @@
   <title><![CDATA[Learning To Code]]></title>
   <link href="http://andrewcallahan.github.com/atom.xml" rel="self"/>
   <link href="http://andrewcallahan.github.com/"/>
-  <updated>2013-04-03T09:58:16-04:00</updated>
+  <updated>2013-04-03T10:02:45-04:00</updated>
   <id>http://andrewcallahan.github.com/</id>
   <author>
     <name><![CDATA[Andrew Callahan]]></name>
@@ -104,7 +104,6 @@
 <span class='line-number'>12</span>
 <span class='line-number'>13</span>
 <span class='line-number'>14</span>
-<span class='line-number'>15</span>
 </pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Fixnum</span>
 </span><span class='line'>  <span class="k">def</span> <span class="nf">collatz</span>
 </span><span class='line'>    <span class="n">array</span> <span class="o">=</span> <span class="o">[]</span>
@@ -117,7 +116,6 @@
 </span><span class='line'>      <span class="k">end</span>
 </span><span class='line'>    <span class="k">end</span>
 </span><span class='line'>    <span class="n">array</span><span class="o">.</span><span class="n">count</span>
-</span><span class='line'>    <span class="c1"># puts &quot;#{self} has #{array.count} numbers in it&#39;s sequence&quot;</span>
 </span><span class='line'>  <span class="k">end</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
