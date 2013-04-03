@@ -9,7 +9,20 @@
   <meta name="author" content="Andrew Callahan">
 
   
-  <meta name="description" content="When doing Project Euler prolem #14 I was running into a problem. I wrote a method that took a number and returned the length of it&#8217;s Collatz &hellip;">
+  <meta name="description" content="When doing Project Euler prolem #14 I was running into a problem. 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+The following iterative sequence is defined for the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -93,7 +106,37 @@
   </header>
 
 
-  <div class="entry-content"><p>When doing Project Euler prolem #14 I was running into a problem. I wrote a method that took a number and returned the length of it&#8217;s Collatz sequence.</p>
+  <div class="entry-content"><p>When doing Project Euler prolem #14 I was running into a problem.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>The following iterative sequence is defined for the set of positive integers:
+</span><span class='line'>
+</span><span class='line'>n  n/2 (n is even)
+</span><span class='line'>n  3n + 1 (n is odd)
+</span><span class='line'>
+</span><span class='line'>Using the rule above and starting with 13, we generate the following sequence:
+</span><span class='line'>
+</span><span class='line'>13  40  20  10  5  16  8  4  2  1
+</span><span class='line'>It can be seen that this sequence (starting at 13 and finishing at 1) contains 10 terms. Although it has not been proved yet (Collatz Problem), it is thought that all starting numbers finish at 1.
+</span><span class='line'>
+</span><span class='line'>Which starting number, under one million, produces the longest chain?
+</span><span class='line'>
+</span><span class='line'>NOTE: Once the chain starts the terms are allowed to go above one million.</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I started out by writing a method that took a number and returned the length of it&#8217;s Collatz sequence.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
