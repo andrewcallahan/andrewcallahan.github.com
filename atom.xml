@@ -4,7 +4,7 @@
   <title><![CDATA[Learning To Code]]></title>
   <link href="http://andrewcallahan.github.com/atom.xml" rel="self"/>
   <link href="http://andrewcallahan.github.com/"/>
-  <updated>2013-04-03T09:54:03-04:00</updated>
+  <updated>2013-04-03T09:58:16-04:00</updated>
   <id>http://andrewcallahan.github.com/</id>
   <author>
     <name><![CDATA[Andrew Callahan]]></name>
@@ -138,7 +138,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>The program I build determiend correctly that out of the first million numbers - 837,799 has the longest Collatz sequence. My code could be optimized further - it takes a good minute to run now. That would involved determining which numbers I don&#8217;t need to iterate over - for instance it seems that even numbers generally (but not always) have longer sequences as you increase, and that odd numbers generally have longer sequences than even numbers.</p>
+<p>The program I built determiend correctly that out of the first million numbers - 837,799 has the longest Collatz sequence. My code could be optimized further - it takes a good minute to run now. That would involved determining which numbers I don&#8217;t need to iterate over - for instance it seems that even numbers generally (but not always) have longer sequences as you increase, and that odd numbers generally have longer sequences than even numbers.</p>
 ]]></content>
   </entry>
   
