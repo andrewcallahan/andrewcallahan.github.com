@@ -4,7 +4,7 @@
   <title><![CDATA[Learning To Code]]></title>
   <link href="http://andrewcallahan.github.com/atom.xml" rel="self"/>
   <link href="http://andrewcallahan.github.com/"/>
-  <updated>2013-04-03T10:13:39-04:00</updated>
+  <updated>2013-04-05T09:37:27-04:00</updated>
   <id>http://andrewcallahan.github.com/</id>
   <author>
     <name><![CDATA[Andrew Callahan]]></name>
@@ -18,7 +18,7 @@
     <link href="http://andrewcallahan.github.com/blog/2013/04/03/reopening-the-fixnum-class/"/>
     <updated>2013-04-03T09:45:00-04:00</updated>
     <id>http://andrewcallahan.github.com/blog/2013/04/03/reopening-the-fixnum-class</id>
-    <content type="html"><![CDATA[<p>When doing Project Euler prolem #14 I was running into a problem.</p>
+    <content type="html"><![CDATA[<p>When doing Project Euler problem #14 I was running into a problem.</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -48,7 +48,7 @@
 </span><span class='line'>NOTE: Once the chain starts the terms are allowed to go above one million.</span></code></pre></td></tr></table></div></figure>
 
 
-<p>I started out by writing a method that took a number and returned the length of it&#8217;s Collatz sequence.</p>
+<p>I started out by writing a method that took a number and returned the length of its Collatz sequence.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
