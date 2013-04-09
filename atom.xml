@@ -4,7 +4,7 @@
   <title><![CDATA[Learning To Code]]></title>
   <link href="http://andrewcallahan.github.com/atom.xml" rel="self"/>
   <link href="http://andrewcallahan.github.com/"/>
-  <updated>2013-04-09T09:52:20-04:00</updated>
+  <updated>2013-04-09T09:56:17-04:00</updated>
   <id>http://andrewcallahan.github.com/</id>
   <author>
     <name><![CDATA[Andrew Callahan]]></name>
@@ -18,7 +18,7 @@
     <link href="http://andrewcallahan.github.com/blog/2013/04/09/climbing-mt-stripe/"/>
     <updated>2013-04-09T09:30:00-04:00</updated>
     <id>http://andrewcallahan.github.com/blog/2013/04/09/climbing-mt-stripe</id>
-    <content type="html"><![CDATA[<p>This is (hopefully) part 1 of a muli-part series of blog posts about Stripe</p>
+    <content type="html"><![CDATA[<p>This is (hopefully) part 1 of a muli-part series of blog posts about <a href="https://stripe.com/">Stripe</a>.</p>
 
 <p><img src="images/800px-Mount_Everest_as_seen_from_Drukair2_PLW_edit.jpg"></p>
 
@@ -211,11 +211,11 @@
 
 <p><img src= "images/cardpopup.png"></p>
 
-<p>The most important skill I&#8217;ve developed at the Flatiron School is taking big problems and breaking them down into small ones. In order to climb Mt. Everest the first step is to make it to base camp one.</p>
+<p>The most important skill I&#8217;ve developed at the Flatiron School is getting better at taking big problems, and breaking them down into small ones. In order to climb Mt. Everest the first major goal is to make it to base camp one.</p>
 
 <p><img src="images/20110810_North_Face_of_Everest_Tibet_China_Panoramic.jpg"></p>
 
-<p>This is basically where we are with integrating Stripe into our application. We can&#8217;t actually accept real credit cards (only test ones), we are not capturing any information about our customers, and we can only do these transactions as a javascript popup. There is still a long way to go to the top of Mt. Stripe, but getting to this stage was still a huge accomplishment!</p>
+<p>Similarily the first step of fully integrating Stripe payments into your application is to allow a user to successfully buy one product from you. Today, we did this, and it feels great. However looking up, there is still a long way to go to the top of Mt. Stripe. We can&#8217;t actually accept real credit cards (only test ones), we are not capturing any information about our customers, and we can only do these transactions as a javascript popup. There is a lot of work left to go, but just accomplishing this small step has given me a lot of energy to push foward towards the summit!</p>
 ]]></content>
   </entry>
   
