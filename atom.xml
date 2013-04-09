@@ -4,7 +4,7 @@
   <title><![CDATA[Learning To Code]]></title>
   <link href="http://andrewcallahan.github.com/atom.xml" rel="self"/>
   <link href="http://andrewcallahan.github.com/"/>
-  <updated>2013-04-09T10:02:37-04:00</updated>
+  <updated>2013-04-09T10:03:22-04:00</updated>
   <id>http://andrewcallahan.github.com/</id>
   <author>
     <name><![CDATA[Andrew Callahan]]></name>
@@ -204,14 +204,21 @@
 
 <p>At this point we were able to have our users click on &#8216;pay with card&#8217;, enter their credit card information, and actually buy a ticket to our hackathon!</p>
 
-<p>This is how the page looks with the &#8216;Pay with Card&#8217; button on the bottom.
+<p>This is how the page looks with the &#8216;Pay with Card&#8217; button on the bottom.<br>
 <img src= "http://andrewcallahan.github.com/images/paywithcard.png"></p>
 
 <br>
 
 
-<p>This is what the popup looks like where a user can enter in their credit card information to buy a ticket.
-<img src= "http://andrewcallahan.github.com/images/cardpopup.png"></p>
+<br>
+
+
+<p>This is what the popup looks like where a user can enter in their credit card information to buy a ticket.</p>
+
+<br>
+
+
+<p><img src= "http://andrewcallahan.github.com/images/cardpopup.png"></p>
 
 <p>The most important skill I&#8217;ve developed at the Flatiron School is getting better at taking big problems, and breaking them down into small ones. In order to climb Mt. Everest the first major goal is to make it to base camp one.</p>
 
