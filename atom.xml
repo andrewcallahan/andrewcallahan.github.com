@@ -4,7 +4,7 @@
   <title><![CDATA[Learning To Code]]></title>
   <link href="http://andrewcallahan.github.com/atom.xml" rel="self"/>
   <link href="http://andrewcallahan.github.com/"/>
-  <updated>2013-04-09T10:03:22-04:00</updated>
+  <updated>2013-04-09T10:04:59-04:00</updated>
   <id>http://andrewcallahan.github.com/</id>
   <author>
     <name><![CDATA[Andrew Callahan]]></name>
@@ -22,7 +22,7 @@
 
 <p><img src="http://andrewcallahan.github.com/images/800px-Mount_Everest_as_seen_from_Drukair2_PLW_edit.jpg"></p>
 
-<p>Incorporating a payment system into a web application has been an aspiration of mine for some time now. I kept putting it off because it seemed too daunting - the programming equivilant of climbing Mt. Everest. This weekend, however, a few flatiron students and I built an app called CodeWithUs. The idea is to allow people to post hackathons, and then get the right mix of people to attend them. We finished the data modeling and authentication on Saturday, and then took Sunday to fill in some of the views. Once the views started looking pretty good, <a href="http://christinachang.github.io/">Christina</a> and I decided to integrate <a href="https://stripe.com/">Stripe</a> so that users could pay for a ticket to a hackathon.</p>
+<p>Incorporating a payment system into a web application has been an aspiration of mine for some time now. I kept putting it off because it seemed too daunting - the programming equivilant of climbing Mt. Everest. This weekend, however, a few flatiron students and I built an app called <a href="https://github.com/andrewcallahan/codewithus">CodeWithUs</a>. The idea is to allow people to post hackathons, and then get the right mix of people to attend them. We finished the data modeling and authentication on Saturday, and then took Sunday to fill in some of the views. Once the views started looking pretty good, <a href="http://christinachang.github.io/">Christina</a> and I decided to integrate <a href="https://stripe.com/">Stripe</a> so that users could pay for a ticket to a hackathon.</p>
 
 <p>We choose <a href="https://stripe.com/">Stripe</a> because we heard it was the easiest API for developers. This seemed like the perfect way to build our fist payment system! I first made a Stripe <a href="https://manage.stripe.com/register">account</a> - which took all of 2 minutes. Then we started looking at the excellent documentation and found a tutorial for <a href="https://stripe.com/docs/checkout/guides/rails">Stripe Checkout</a> using Ruby on Rails.</p>
 
