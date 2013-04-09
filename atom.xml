@@ -4,7 +4,7 @@
   <title><![CDATA[Learning To Code]]></title>
   <link href="http://andrewcallahan.github.com/atom.xml" rel="self"/>
   <link href="http://andrewcallahan.github.com/"/>
-  <updated>2013-04-09T10:04:59-04:00</updated>
+  <updated>2013-04-09T10:13:56-04:00</updated>
   <id>http://andrewcallahan.github.com/</id>
   <author>
     <name><![CDATA[Andrew Callahan]]></name>
@@ -34,19 +34,21 @@
 
 <p>We first added the Stripe gem to our Gemfile.</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'stripe', :git =&gt; 'https://github.com/stripe/stripe-ruby'</span></code></pre></td></tr></table></div></figure>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">gem</span> <span class="s1">&#39;stripe&#39;</span><span class="p">,</span> <span class="ss">:git</span> <span class="o">=&gt;</span> <span class="s1">&#39;https://github.com/stripe/stripe-ruby&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Then we generated a controller for charges.</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ rails g controller charges</span></code></pre></td></tr></table></div></figure>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">$</span> <span class="n">rails</span> <span class="n">g</span> <span class="n">controller</span> <span class="n">charges</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>We copied the suggested &#8216;new&#8217; and &#8216;create&#8217; actions from Stripe into our charges controller.</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -74,61 +76,64 @@
 <span class='line-number'>26</span>
 <span class='line-number'>27</span>
 <span class='line-number'>28</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class ChargesController &lt; ApplicationController
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">ChargesController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
 </span><span class='line'>
-</span><span class='line'>def new
-</span><span class='line'>end
+</span><span class='line'><span class="k">def</span> <span class="nf">new</span>
+</span><span class='line'><span class="k">end</span>
 </span><span class='line'>
-</span><span class='line'>def create
-</span><span class='line'>  # Amount in cents
-</span><span class='line'>  @amount = 500
+</span><span class='line'><span class="k">def</span> <span class="nf">create</span>
+</span><span class='line'>  <span class="c1"># Amount in cents</span>
+</span><span class='line'>  <span class="vi">@amount</span> <span class="o">=</span> <span class="mi">500</span>
 </span><span class='line'>
-</span><span class='line'>  customer = Stripe::Customer.create(
-</span><span class='line'>    :email =&gt; 'example@stripe.com',
-</span><span class='line'>    :card  =&gt; params[:stripeToken]
-</span><span class='line'>  )
+</span><span class='line'>  <span class="n">customer</span> <span class="o">=</span> <span class="ss">Stripe</span><span class="p">:</span><span class="ss">:Customer</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+</span><span class='line'>    <span class="ss">:email</span> <span class="o">=&gt;</span> <span class="s1">&#39;example@stripe.com&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="ss">:card</span>  <span class="o">=&gt;</span> <span class="n">params</span><span class="o">[</span><span class="ss">:stripeToken</span><span class="o">]</span>
+</span><span class='line'>  <span class="p">)</span>
 </span><span class='line'>
-</span><span class='line'>  charge = Stripe::Charge.create(
-</span><span class='line'>    :customer    =&gt; customer.id,
-</span><span class='line'>    :amount      =&gt; @amount,
-</span><span class='line'>    :description =&gt; 'Rails Stripe customer',
-</span><span class='line'>    :currency    =&gt; 'usd'
-</span><span class='line'>  )
+</span><span class='line'>  <span class="n">charge</span> <span class="o">=</span> <span class="ss">Stripe</span><span class="p">:</span><span class="ss">:Charge</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+</span><span class='line'>    <span class="ss">:customer</span>    <span class="o">=&gt;</span> <span class="n">customer</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+</span><span class='line'>    <span class="ss">:amount</span>      <span class="o">=&gt;</span> <span class="vi">@amount</span><span class="p">,</span>
+</span><span class='line'>    <span class="ss">:description</span> <span class="o">=&gt;</span> <span class="s1">&#39;Rails Stripe customer&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="ss">:currency</span>    <span class="o">=&gt;</span> <span class="s1">&#39;usd&#39;</span>
+</span><span class='line'>  <span class="p">)</span>
 </span><span class='line'>
-</span><span class='line'>rescue Stripe::CardError =&gt; e
-</span><span class='line'>  flash[:error] = e.message
-</span><span class='line'>  redirect_to charges_path
-</span><span class='line'>end
+</span><span class='line'><span class="k">rescue</span> <span class="ss">Stripe</span><span class="p">:</span><span class="ss">:CardError</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>  <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span>
+</span><span class='line'>  <span class="n">redirect_to</span> <span class="n">charges_path</span>
+</span><span class='line'><span class="k">end</span>
 </span><span class='line'>
 </span><span class='line'>
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Then we added a resource for charges to our routes file, which will give us all the standard routes we need.</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>resources :charges</span></code></pre></td></tr></table></div></figure>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">resources</span> <span class="ss">:charges</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>At this point we created a new file called stripe.rb in the config/initializers folder. We were supposed to store our passwords safely, but <a href="https://github.com/laserlemon/figaro">Figaro</a>, the Gem we were using to do this, was causing issues, so we temporarily hard coded the keys in.</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Rails.configuration.stripe = {
-</span><span class='line'>  :publishable_key =&gt; 'OUR_STRIPE_PUBLISHABLE_KEY',
-</span><span class='line'>  :secret_key      =&gt; 'OUR_STRIPE_SECRET_KEY'
-</span><span class='line'>}
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">stripe</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="ss">:publishable_key</span> <span class="o">=&gt;</span> <span class="s1">&#39;OUR_STRIPE_PUBLISHABLE_KEY&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:secret_key</span>      <span class="o">=&gt;</span> <span class="s1">&#39;OUR_STRIPE_SECRET_KEY&#39;</span>
+</span><span class='line'><span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>Stripe.api_key = Rails.configuration.stripe[:secret_key]</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'><span class="no">Stripe</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="no">Rails</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">stripe</span><span class="o">[</span><span class="ss">:secret_key</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>This is where we started to venture off the beaten path and go our own way. The tutorial wanted us to create html.erb files for the overall layout, and for the &#8216;new&#8217; and &#8216;create&#8217; actions. We already had a layout, and for the sake of getting this to work, we just appended the charges#new functionality into the hacakthon show page. We also were able to dynamically set the price in Stripe based on which hacakthon page the user was on.</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -164,42 +169,43 @@
 <span class='line-number'>34</span>
 <span class='line-number'>35</span>
 <span class='line-number'>36</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;div&gt;&lt;%= image_tag @hackathon.image %&gt;&lt;/div&gt;
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&lt;</span><span class="n">div</span><span class="o">&gt;&lt;</span><span class="sx">%= image_tag @hackathon.image %&gt;&lt;/div&gt;</span>
 </span><span class='line'>
-</span><span class='line'>&lt;ul&gt;
-</span><span class='line'>    &lt;li&gt;&lt;%= @hackathon.name %&gt;&lt;/li&gt;
-</span><span class='line'>    &lt;li&gt;&lt;%= @hackathon.start %&gt;&lt;/li&gt;
-</span><span class='line'>    &lt;li&gt;&lt;%= @hackathon.end %&gt;&lt;/li&gt;
-</span><span class='line'>    &lt;li&gt;&lt;%= @hackathon.location %&gt;&lt;/li&gt;
-</span><span class='line'>    &lt;li&gt;&lt;%= @hackathon.description %&gt;&lt;/li&gt;
-</span><span class='line'>    &lt;li&gt;&lt;%= @hackathon.capacity %&gt;&lt;/li&gt;
-</span><span class='line'>&lt;/ul&gt;
+</span><span class='line'><span class="sx">&lt;ul&gt;</span>
+</span><span class='line'><span class="sx">    &lt;li&gt;&lt;%=</span> <span class="vi">@hackathon</span><span class="o">.</span><span class="n">name</span> <span class="sx">%&gt;&lt;/li&gt;</span>
+</span><span class='line'>    <span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;&lt;</span><span class="sx">%= @hackathon.start %&gt;&lt;/li&gt;</span>
+</span><span class='line'><span class="sx">    &lt;li&gt;&lt;%=</span> <span class="vi">@hackathon</span><span class="o">.</span><span class="n">end</span> <span class="sx">%&gt;&lt;/li&gt;</span>
+</span><span class='line'>    <span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;&lt;</span><span class="sx">%= @hackathon.location %&gt;&lt;/li&gt;</span>
+</span><span class='line'><span class="sx">    &lt;li&gt;&lt;%=</span> <span class="vi">@hackathon</span><span class="o">.</span><span class="n">description</span> <span class="sx">%&gt;&lt;/li&gt;</span>
+</span><span class='line'>    <span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;&lt;</span><span class="sx">%= @hackathon.capacity %&gt;&lt;/li&gt;</span>
+</span><span class='line'><span class="sx">&lt;/ul&gt;</span>
 </span><span class='line'>
-</span><span class='line'>Participants signed-up:
-</span><span class='line'>&lt;ul&gt;
-</span><span class='line'>  &lt;% @hackathon.users.each do |user| %&gt;
-</span><span class='line'>    &lt;li&gt;&lt;%= user.name %&gt;&lt;/li&gt;
-</span><span class='line'>  &lt;% end %&gt;
-</span><span class='line'>&lt;/ul&gt;
+</span><span class='line'><span class="sx">Participants signed-up:</span>
+</span><span class='line'><span class="sx">&lt;ul&gt;</span>
+</span><span class='line'><span class="sx">  &lt;% @hackathon.users.each do |user| %&gt;</span>
+</span><span class='line'><span class="sx">    &lt;li&gt;&lt;%=</span> <span class="n">user</span><span class="o">.</span><span class="n">name</span> <span class="sx">%&gt;&lt;/li&gt;</span>
+</span><span class='line'>  <span class="o">&lt;</span><span class="sx">% end %&gt;</span>
+</span><span class='line'><span class="sx">&lt;/ul&gt;</span>
 </span><span class='line'>
-</span><span class='line'>&lt;%= form_for(@participant) do |f| %&gt;
-</span><span class='line'>  &lt;%= f.hidden_field :hackathon_id, :value =&gt; params[:id] %&gt;
-</span><span class='line'>  &lt;%= f.submit "Join Hackathon!" %&gt;
-</span><span class='line'>&lt;% end %&gt;
+</span><span class='line'><span class="o">&lt;</span><span class="sx">%= form_for(@participant) do |f| %&gt;</span>
+</span><span class='line'><span class="sx">  &lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">hidden_field</span> <span class="ss">:hackathon_id</span><span class="p">,</span> <span class="ss">:value</span> <span class="o">=&gt;</span> <span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span> <span class="sx">%&gt;</span>
+</span><span class='line'><span class="sx">  &lt;%= f.submit &quot;Join Hackathon!&quot; %&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="sx">% end %&gt;</span>
 </span><span class='line'>
 </span><span class='line'>
-</span><span class='line'>Pay Up!
-</span><span class='line'>&lt;%= form_tag charges_path do %&gt;
-</span><span class='line'>  &lt;article&gt;
-</span><span class='line'>    &lt;label class="amount"&gt;
-</span><span class='line'>      &lt;span&gt;Amount: $&lt;%= @hackathon.price %&gt;.00&lt;/span&gt;
-</span><span class='line'>    &lt;/label&gt;
-</span><span class='line'>  &lt;/article&gt;
-</span><span class='line'>  &lt;script src="https://checkout.stripe.com/v2/checkout.js" class="stripe-button"
-</span><span class='line'>          data-key="&lt;%= Rails.configuration.stripe[:publishable_key] %&gt;"
-</span><span class='line'>          data-description="&lt;%= @hackathon.name %&gt;"
-</span><span class='line'>          data-amount="&lt;%= @hackathon.price*100 %&gt;"&gt;&lt;/script&gt;
-</span><span class='line'>&lt;% end %&gt;</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'><span class="sx">Pay Up!</span>
+</span><span class='line'><span class="sx">&lt;%= form_tag charges_path do %&gt;</span>
+</span><span class='line'>  <span class="o">&lt;</span><span class="n">article</span><span class="o">&gt;</span>
+</span><span class='line'>    <span class="o">&lt;</span><span class="n">label</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;amount&quot;</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="n">span</span><span class="o">&gt;</span><span class="ss">Amount</span><span class="p">:</span> <span class="vg">$&lt;</span><span class="sx">%= @hackathon.price %&gt;.00&lt;/span&gt;</span>
+</span><span class='line'><span class="sx">    &lt;/label&gt;</span>
+</span><span class='line'><span class="sx">  &lt;/article&gt;</span>
+</span><span class='line'><span class="sx">  &lt;script src=</span><span class="s2">&quot;https://checkout.stripe.com/v2/checkout.js&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;stripe-button&quot;</span>
+</span><span class='line'>          <span class="n">data</span><span class="o">-</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;&lt;%= Rails.configuration.stripe[:publishable_key] %&gt;&quot;</span>
+</span><span class='line'>          <span class="n">data</span><span class="o">-</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;&lt;%= @hackathon.name %&gt;&quot;</span>
+</span><span class='line'>          <span class="n">data</span><span class="o">-</span><span class="n">amount</span><span class="o">=</span><span class="s2">&quot;&lt;%= @hackathon.price*100 %&gt;&quot;</span><span class="o">&gt;&lt;</span><span class="sr">/script&gt;</span>
+</span><span class='line'><span class="sr">&lt;% end %&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>At this point we were able to have our users click on &#8216;pay with card&#8217;, enter their credit card information, and actually buy a ticket to our hackathon!</p>
