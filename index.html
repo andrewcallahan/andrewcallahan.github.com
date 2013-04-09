@@ -9,20 +9,7 @@
   <meta name="author" content="Andrew Callahan">
 
   
-  <meta name="description" content="When doing Project Euler problem #14 I was running into a problem. 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-The following iterative sequence is defined for the &hellip;">
+  <meta name="description" content="This is (hopefully) part 1 of a muli-part series of blog posts about Stripe Incorporating a payment system into a web application has been an &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +64,231 @@ The following iterative sequence is defined for the &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/04/09/climbing-mt-stripe/">Climbing Mt. Stripe</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-09T09:30:00-04:00" pubdate data-updated="true">Apr 9<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This is (hopefully) part 1 of a muli-part series of blog posts about Stripe</p>
+
+<p>Incorporating a payment system into a web application has been an aspiration of mine for some time now. I kept putting it off because it seemed too daunting. This weekend, however, a few flatiron students and I built an app called CodeWithUs. The idea is to allow people to post hackathons, and then get the right mix of people to attend them. We finished the data modeling and authentication on Saturday, and then took Sunday to fill in some of the views. Once the views started looking pretty good, <a href="http://christinachang.github.io/">Christina</a> and I decided to integrate Stripe so that users could pay for a ticket to a hackathon.</p>
+
+<p>We choose Stripe because we heard it was the easiest API for developers. This seemed like the perfect way to build our fist payment system! I first made a Stripe account - which took all of 2 minutes. Then we started looking at the excellent documentation and found a tutorial for Stripe Checkout using Ruby on Rails.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>The Checkout makes it even easier to integrate Stripe directly into your website. We'll take care of building and styling credit card inputs, validation, error handling, and sending the encrypted card number securely to Stripe.</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We followed the tutorial, but had to make some slight modifications sine we were incorporating this into an existing application.</p>
+
+<p>We first added the Stripe gem to our Gemfile.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'stripe', :git =&gt; 'https://github.com/stripe/stripe-ruby'</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then we generated a controller for charges.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ rails g controller charges</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We copied the suggested &#8216;new&#8217; and &#8216;create&#8217; actions from Stripe into our charges controller.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class ChargesController &lt; ApplicationController
+</span><span class='line'>
+</span><span class='line'>def new
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>def create
+</span><span class='line'>  # Amount in cents
+</span><span class='line'>  @amount = 500
+</span><span class='line'>
+</span><span class='line'>  customer = Stripe::Customer.create(
+</span><span class='line'>    :email =&gt; 'example@stripe.com',
+</span><span class='line'>    :card  =&gt; params[:stripeToken]
+</span><span class='line'>  )
+</span><span class='line'>
+</span><span class='line'>  charge = Stripe::Charge.create(
+</span><span class='line'>    :customer    =&gt; customer.id,
+</span><span class='line'>    :amount      =&gt; @amount,
+</span><span class='line'>    :description =&gt; 'Rails Stripe customer',
+</span><span class='line'>    :currency    =&gt; 'usd'
+</span><span class='line'>  )
+</span><span class='line'>
+</span><span class='line'>rescue Stripe::CardError =&gt; e
+</span><span class='line'>  flash[:error] = e.message
+</span><span class='line'>  redirect_to charges_path
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then we added a resource for charges to our routes file, which will give us all the standard routes we need.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>resources :charges</span></code></pre></td></tr></table></div></figure>
+
+
+<p>At this point we created a new file called stripe.rb in the config/initializers folder. We were supposed to store our passwords safely, but <a href="https://github.com/laserlemon/figaro">Figaro</a>, the Gem we were using to do this, was causing issues, so we temporarily hard coded the keys in.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Rails.configuration.stripe = {
+</span><span class='line'>  :publishable_key =&gt; 'OUR_STRIPE_PUBLISHABLE_KEY',
+</span><span class='line'>  :secret_key      =&gt; 'OUR_STRIPE_SECRET_KEY'
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>Stripe.api_key = Rails.configuration.stripe[:secret_key]</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is where we started to venture off the beaten path and go our own way. The tutorial wanted us to create html.erb files for the overall layout, and for the &#8216;new&#8217; and &#8216;create&#8217; actions. We already had a layout, and for the sake of getting this to work, we just appended the charges#new functionality into the hacakthon show page. We also were able to dynamically set the price in Stripe based on which hacakthon page the user was on.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;div&gt;&lt;%= image_tag @hackathon.image %&gt;&lt;/div&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;ul&gt;
+</span><span class='line'>    &lt;li&gt;&lt;%= @hackathon.name %&gt;&lt;/li&gt;
+</span><span class='line'>    &lt;li&gt;&lt;%= @hackathon.start %&gt;&lt;/li&gt;
+</span><span class='line'>    &lt;li&gt;&lt;%= @hackathon.end %&gt;&lt;/li&gt;
+</span><span class='line'>    &lt;li&gt;&lt;%= @hackathon.location %&gt;&lt;/li&gt;
+</span><span class='line'>    &lt;li&gt;&lt;%= @hackathon.description %&gt;&lt;/li&gt;
+</span><span class='line'>    &lt;li&gt;&lt;%= @hackathon.capacity %&gt;&lt;/li&gt;
+</span><span class='line'>&lt;/ul&gt;
+</span><span class='line'>
+</span><span class='line'>Participants signed-up:
+</span><span class='line'>&lt;ul&gt;
+</span><span class='line'>  &lt;% @hackathon.users.each do |user| %&gt;
+</span><span class='line'>    &lt;li&gt;&lt;%= user.name %&gt;&lt;/li&gt;
+</span><span class='line'>  &lt;% end %&gt;
+</span><span class='line'>&lt;/ul&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;%= form_for(@participant) do |f| %&gt;
+</span><span class='line'>  &lt;%= f.hidden_field :hackathon_id, :value =&gt; params[:id] %&gt;
+</span><span class='line'>  &lt;%= f.submit "Join Hackathon!" %&gt;
+</span><span class='line'>&lt;% end %&gt;
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>Pay Up!
+</span><span class='line'>&lt;%= form_tag charges_path do %&gt;
+</span><span class='line'>  &lt;article&gt;
+</span><span class='line'>    &lt;label class="amount"&gt;
+</span><span class='line'>      &lt;span&gt;Amount: $&lt;%= @hackathon.price %&gt;.00&lt;/span&gt;
+</span><span class='line'>    &lt;/label&gt;
+</span><span class='line'>  &lt;/article&gt;
+</span><span class='line'>  &lt;script src="https://checkout.stripe.com/v2/checkout.js" class="stripe-button"
+</span><span class='line'>          data-key="&lt;%= Rails.configuration.stripe[:publishable_key] %&gt;"
+</span><span class='line'>          data-description="&lt;%= @hackathon.name %&gt;"
+</span><span class='line'>          data-amount="&lt;%= @hackathon.price*100 %&gt;"&gt;&lt;/script&gt;
+</span><span class='line'>&lt;% end %&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>At this point we were able to have our users click on &#8216;pay with card&#8217;, enter their credit card information, and actually buy a ticket to our hackathon!</p>
+
+<p><img src= "images/paywithcard.png"></p>
+
+<br>
+
+
+<p><img src= "images/cardpopup.png"></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1089,6 +1301,10 @@ Problem 11</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/04/09/climbing-mt-stripe/">Climbing Mt. Stripe</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/04/03/reopening-the-fixnum-class/">Reopening The Fixnum Class</a>
       </li>
     
@@ -1102,10 +1318,6 @@ Problem 11</p>
     
       <li class="post">
         <a href="/blog/2013/02/26/its-reduce/">It&#8217;s Reduce, not Inject</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/02/26/how-i-made-curb-your-flombaum/">How I Made Curb Your Flombaum</a>
       </li>
     
   </ul>
