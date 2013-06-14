@@ -92,10 +92,10 @@
 
 <div class="entry-content"><p>I&#8217;ve made quite a few Rails apps that require storing keys from various proviers (Amazon, Facebok, Twitter, Stripe, etc). Thus far I&#8217;ve only either hard coded the values into my app (horribly insecure, espically since I use mainly public github repositories) or used the <a href="https://github.com/laserlemon/figaro">Figaro gem</a> (which has caused bugs occasionally). Today, however I discovered a third way.</p>
 
-<ol>
-<li>Make a file called env_vars.rb that includes all your keys that you want to keep secret (below, I have put in my twitter keys and tokens) and place it in the app/config folder</li>
-</ol>
+<h2>Step 1</h2>
 
+
+<p>Make a file called env_vars.rb that includes all your keys that you want to keep secret (below, I have put in my twitter keys and tokens) and place it in the app/config folder</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -108,30 +108,36 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<ol>
-<li>In app/config/boot.rb add the following line under require &#8216;rubygems&#8217;:</li>
-</ol>
 
+
+<h2>Step 2</h2>
+
+
+<p>In app/config/boot.rb add the following line under require &#8216;rubygems&#8217;:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">require_relative</span> <span class="s1">&#39;env_vars&#39;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<ol>
-<li>Add the following line to the end of your .gitignore file</li>
-</ol>
 
+
+<h2>Step 3</h2>
+
+
+<p>Add the following line to the end of your .gitignore file</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="sr">/config/en</span><span class="n">v_vars</span><span class="o">.</span><span class="n">rb</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<ol>
-<li>Now you can use whatever environmentl variables you stored in the env_var.rb file. Here is how I call the twitter variables in one of my app&#8217;s twitter.rb initializer.</li>
-</ol>
 
+
+<h2>Step 4</h2>
+
+
+<p>Now you can use whatever environmentl variables you stored in the env_var.rb file. Here is how I call the twitter variables in one of my app&#8217;s twitter.rb initializer.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
