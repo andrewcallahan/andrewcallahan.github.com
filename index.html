@@ -9,7 +9,7 @@
   <meta name="author" content="Andrew Callahan">
 
   
-  <meta name="description" content="This is (hopefully) part 1 of a muli-part series of blog posts about Stripe. Incorporating a payment system into a web application has been an &hellip;">
+  <meta name="description" content="I&#8217;ve made quite a few Rails apps that require storing keys from various proviers (Amazon, Facebok, Twitter, Stripe, etc). Thus far I&#8217;ve &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +64,100 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/14/alernative-to-figaro/">An Alernative to Figaro</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-14T12:54:00-04:00" pubdate data-updated="true">Jun 14<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I&#8217;ve made quite a few Rails apps that require storing keys from various proviers (Amazon, Facebok, Twitter, Stripe, etc). Thus far I&#8217;ve only either hard coded the values into my app (horribly insecure, espically since I use mainly public github repositories) or used the <a href="https://github.com/laserlemon/figaro">Figaro gem</a> (which has caused bugs occasionally). Today, however I discovered a third way.</p>
+
+<ol>
+<li>Make a file called env_vars.rb that includes all your keys that you want to keep secret (below, I have put in my twitter keys and tokens) and place it in the app/config folder</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;TWITTER_CONSUMER_KEY&#39;</span><span class="o">]</span> <span class="o">=</span>  <span class="s1">&#39;your_twitter_consumer_key&#39;</span>
+</span><span class='line'><span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;TWITTER_CONSUMER_SECRET&#39;</span><span class="o">]</span> <span class="o">=</span>  <span class="s1">&#39;your_twitter_consumer_secret&#39;</span>
+</span><span class='line'><span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;TWITTER_OAUTH_TOKEN&#39;</span><span class="o">]</span> <span class="o">=</span>  <span class="s1">&#39;your_twitter_oauth_token&#39;</span>
+</span><span class='line'><span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;TWITTER_OAUTH_TOKEN_SECRET&#39;</span><span class="o">]</span> <span class="o">=</span>  <span class="s1">&#39;your_twitter_oauth_token_secret&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>In app/config/boot.rb add the following line under require &#8216;rubygems&#8217;:</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">require_relative</span> <span class="s1">&#39;env_vars&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>Add the following line to the end of your .gitignore file</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="sr">/config/en</span><span class="n">v_vars</span><span class="o">.</span><span class="n">rb</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>Now you can use whatever environmentl variables you stored in the env_var.rb file. Here is how I call the twitter variables in one of my app&#8217;s twitter.rb initializer.</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Twitter</span><span class="o">.</span><span class="n">configure</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">consumer_key</span> <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s2">&quot;TWITTER_CONSUMER_KEY&quot;</span><span class="o">]</span>
+</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">consumer_secret</span> <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s2">&quot;TWITTER_CONSUMER_SECRET&quot;</span><span class="o">]</span>
+</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">oauth_token</span> <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s2">&quot;TWITTER_OAUTH_TOKEN&quot;</span><span class="o">]</span>
+</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">oauth_token_secret</span> <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s2">&quot;TWITTER_OAUTH_TOKEN_SECRET&quot;</span><span class="o">]</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, I am aware that there is an even cooler way to add these environmetal variables to your .bash_profile - but I&#8217;ll leave for another time. For now, I am satisfied that I can use environmental variables in a secure, Figaro-free way!</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1324,6 +1418,10 @@ Problem 11</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/06/14/alernative-to-figaro/">An Alernative To Figaro</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/04/09/climbing-mt-stripe/">Climbing Mt. Stripe</a>
       </li>
     
@@ -1337,10 +1435,6 @@ Problem 11</p>
     
       <li class="post">
         <a href="/blog/2013/03/28/top-3-reasons-to-try-project-euler/">Top 3 Reasons To Try Project Euler</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/02/26/its-reduce/">It&#8217;s Reduce, not Inject</a>
       </li>
     
   </ul>
