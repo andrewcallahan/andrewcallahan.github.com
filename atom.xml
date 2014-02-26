@@ -4,7 +4,7 @@
   <title><![CDATA[Learning To Code]]></title>
   <link href="http://andrewcallahan.github.com/atom.xml" rel="self"/>
   <link href="http://andrewcallahan.github.com/"/>
-  <updated>2014-02-26T02:36:14-05:00</updated>
+  <updated>2014-02-26T02:38:36-05:00</updated>
   <id>http://andrewcallahan.github.com/</id>
   <author>
     <name><![CDATA[Andrew Callahan]]></name>
@@ -20,7 +20,7 @@
     <id>http://andrewcallahan.github.com/blog/2014/02/26/make-your-own-url-shortener-with-rails-4-and-heroku</id>
     <content type="html"><![CDATA[<p>Ever wanted to make your very own URL shortener? Know a little bit of rails? Then you&#8217;re good to go!</p>
 
-<p>Here is what I ended up making: http://acal.io/&#8221;>acal.io</a></p>
+<p>Here is what I ended up making: <a href="http://acal.io/">acal.io</a></p>
 
 <h1>Set Up</h1>
 
