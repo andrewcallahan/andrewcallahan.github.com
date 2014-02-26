@@ -9,7 +9,7 @@
   <meta name="author" content="Andrew Callahan">
 
   
-  <meta name="description" content="I&#8217;ve made quite a few Rails apps that require storing keys from various proviers (Amazon, Facebok, Twitter, Stripe, etc). Thus far I&#8217;ve &hellip;">
+  <meta name="description" content="Ever wanted to make your very own URL shortener? Know a little bit of rails? Then you&#8217;re good to go! Here is what I ended up making: http:// &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +64,1259 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/02/26/make-your-own-url-shortener-with-rails-4-and-heroku/">Make Your Own URL Shortener With Rails 4 and Heroku</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-26T02:15:00-05:00" pubdate data-updated="true">Feb 26<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Ever wanted to make your very own URL shortener? Know a little bit of rails? Then you&#8217;re good to go!</p>
+
+<p>Here is what I ended up making: http://acal.io/&#8221;>acal.io</a></p>
+
+<h1>Set Up</h1>
+
+
+<p>Make a new rails app with pg since I&#8217;m deploying to heroku</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">rails</span> <span class="kp">new</span> <span class="n">url</span><span class="o">-</span><span class="n">shortener</span> <span class="o">--</span><span class="n">database</span><span class="o">=</span><span class="n">postgresql</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>add pry to gemfile</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">gem</span> <span class="s1">&#39;pry&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Download <a href="http://getbootstrap.com/">bootstrap</a> and unzip it.</p>
+
+<p>Add bootstrap.min.js to the folder vendor/assets/jacascripts. Then modify application.js to indicate this</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="c1">//= require bootstrap.min</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Add bootstrap.min.css to the folder vendor/assets/stylesheets. Then modify application.css to indicate this</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'> <span class="o">*=</span> <span class="nt">require</span> <span class="nt">bootstrap</span><span class="nc">.min</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h1>Models</h1>
+
+
+<p>Generate the scaffolding for the link</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">rails</span> <span class="n">g</span> <span class="n">scaffold</span> <span class="n">link</span> <span class="n">given_url</span><span class="ss">:string</span> <span class="ss">slug</span><span class="p">:</span><span class="n">string</span> <span class="ss">clicks</span><span class="p">:</span><span class="n">integer</span> <span class="ss">snapshot</span><span class="p">:</span><span class="n">string</span> <span class="ss">title</span><span class="p">:</span><span class="n">string</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Modify the default value for clicks BEFORE migrating. This is because you can&#8217;t increment a non-integer value (nil), which is the original default.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">t</span><span class="o">.</span><span class="n">integer</span> <span class="ss">:clicks</span><span class="p">,</span>  <span class="ss">:default</span> <span class="o">=&gt;</span> <span class="mi">0</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Make a method to generate the slug aka the short part of the link after the base url. I&#8217;m using base 36, which allows really large numbers to be shown in just a few characters. For example the 1 Billionth link in the database will have a slug of &#8220;gjdgxs&#8221; - just 6 characters as opposed to the 10 characters in the number 1,000,000,000.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">generate_slug</span>
+</span><span class='line'>    <span class="nb">self</span><span class="o">.</span><span class="n">slug</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">to_s</span><span class="p">(</span><span class="mi">36</span><span class="p">)</span>
+</span><span class='line'>    <span class="nb">self</span><span class="o">.</span><span class="n">save</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Add the figaro gem</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">gem</span> <span class="s2">&quot;figaro&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then generate the application.yml file that git will ignore (so your passwords don&#8217;t get committed to the rest of the world)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">rails</span> <span class="n">generate</span> <span class="ss">figaro</span><span class="p">:</span><span class="n">install</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then add the base url as an environmental variable to the application.yml file</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">BASE_URL</span><span class="p">:</span> <span class="s1">&#39;http://acal.io/&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Make a convenience method to display the entire shortened url</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">display_slug</span>
+</span><span class='line'>    <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;BASE_URL&#39;</span><span class="o">]</span> <span class="o">+</span> <span class="nb">self</span><span class="o">.</span><span class="n">slug</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I know I want to capture a screenshot as well as the page title. I will use IMGKit, CarrierWave and Fog for the screenshot and Mechanize for getting the page title. I also know upfront that I want to do this asynchronously, so I&#8217;ll also throw in SideKiq.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">gem</span> <span class="s1">&#39;imgkit&#39;</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;carrierwave&#39;</span>
+</span><span class='line'><span class="n">gem</span> <span class="s2">&quot;fog&quot;</span><span class="p">,</span> <span class="s2">&quot;~&gt; 1.3.1&quot;</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;mechanize&#39;</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;sidekiq&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Make Amazon Environmental Variables</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">AWS_ACCESS_KEY_ID</span><span class="p-Indicator">:</span> <span class="s">&#39;REDACTED&#39;</span>
+</span><span class='line'><span class="l-Scalar-Plain">AWS_SECRET_ACCESS_KEY</span><span class="p-Indicator">:</span> <span class="s">&#39;REDACTED&#39;</span>
+</span><span class='line'><span class="l-Scalar-Plain">AWS_BUCKET</span><span class="p-Indicator">:</span> <span class="s">&#39;REDACTED&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Configure CarrierWave</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">CarrierWave</span><span class="o">.</span><span class="n">configure</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="no">Rails</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;tmp&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">cache_dir</span> <span class="o">=</span> <span class="s1">&#39;carrierwave&#39;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">fog_credentials</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="ss">:provider</span>               <span class="o">=&gt;</span> <span class="s1">&#39;AWS&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="ss">:aws_access_key_id</span>      <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;AWS_ACCESS_KEY_ID&#39;</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>    <span class="ss">:aws_secret_access_key</span>  <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;AWS_SECRET_ACCESS_KEY&#39;</span><span class="o">]</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">fog_directory</span>  <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;AWS_BUCKET&#39;</span><span class="o">]</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now I can actually implement the screenshot in the link class</p>
+
+<p>First I add the upload functionality of CarrierWave</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="n">mount_uploader</span> <span class="ss">:snapshot</span><span class="p">,</span> <span class="no">SnapshotUploader</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then I make a method for actually getting the screenshot and page title. For now, these are just Sidekiq Workers which I&#8217;ll actually build later.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">screenshot_scrape</span>
+</span><span class='line'>    <span class="no">Screenshot</span><span class="o">.</span><span class="n">perform_async</span><span class="p">(</span><span class="nb">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+</span><span class='line'>    <span class="no">Scrape</span><span class="o">.</span><span class="n">perform_async</span><span class="p">(</span><span class="nb">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I then make sure to create the slug, capture the screenshot, and capture the page title by making after_create callbacks.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="n">after_create</span> <span class="ss">:generate_slug</span><span class="p">,</span> <span class="ss">:screenshot_scrape</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I then make my screenshot worker</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Screenshot</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="ss">Sidekiq</span><span class="p">:</span><span class="ss">:Worker</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="n">link_id</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">link</span> <span class="o">=</span> <span class="no">Link</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">link_id</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">file</span> <span class="o">=</span> <span class="no">Tempfile</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="o">[</span><span class="s2">&quot;template_</span><span class="si">#{</span><span class="n">link</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">to_s</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s1">&#39;.jpg&#39;</span><span class="o">]</span><span class="p">,</span> <span class="s1">&#39;tmp&#39;</span><span class="p">,</span> <span class="ss">:encoding</span> <span class="o">=&gt;</span> <span class="s1">&#39;ascii-8bit&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="no">IMGKit</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">link</span><span class="o">.</span><span class="n">given_url</span><span class="p">,</span> <span class="ss">quality</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> <span class="ss">width</span><span class="p">:</span> <span class="mi">600</span><span class="p">)</span><span class="o">.</span><span class="n">to_jpg</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">file</span><span class="o">.</span><span class="n">flush</span>
+</span><span class='line'>    <span class="n">link</span><span class="o">.</span><span class="n">snapshot</span> <span class="o">=</span> <span class="n">file</span>
+</span><span class='line'>    <span class="n">link</span><span class="o">.</span><span class="n">save</span>
+</span><span class='line'>    <span class="n">file</span><span class="o">.</span><span class="n">unlink</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then I make my scrape worker</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Scrape</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="ss">Sidekiq</span><span class="p">:</span><span class="ss">:Worker</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="n">link_id</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">link</span> <span class="o">=</span> <span class="no">Link</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">link_id</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">agent</span> <span class="o">=</span> <span class="no">Mechanize</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>    <span class="n">page</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">link</span><span class="o">.</span><span class="n">given_url</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">link</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">title</span>
+</span><span class='line'>    <span class="n">link</span><span class="o">.</span><span class="n">save</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I finish up by making the uploader that CarrierWave needs. I am adding the cache_dir specifically to get around Heroku&#8217;s file writing permissions issues.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">SnapshotUploader</span> <span class="o">&lt;</span> <span class="ss">CarrierWave</span><span class="p">:</span><span class="ss">:Uploader</span><span class="o">::</span><span class="no">Base</span>
+</span><span class='line'>  <span class="n">storage</span> <span class="ss">:file</span>
+</span><span class='line'>  <span class="n">storage</span> <span class="ss">:fog</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">store_dir</span>
+</span><span class='line'>    <span class="s2">&quot;uploads/</span><span class="si">#{</span><span class="n">model</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">underscore</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="n">mounted_as</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="n">model</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">cache_dir</span>
+</span><span class='line'>    <span class="s2">&quot;</span><span class="si">#{</span><span class="no">Rails</span><span class="o">.</span><span class="n">root</span><span class="si">}</span><span class="s2">/tmp/uploads&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h1>Controllers</h1>
+
+
+<p>First up I make some modifications to the auto generated links controller. I decided to delete index, edit, update, and destroy functionality. These get into permissions issues, which could lead naturally to building out users and all sorts of other features that are not core to this app. I also wanted the create action to respond asynchronously, so added the ability to respond to format.js (more on this later).</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">LinksController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+</span><span class='line'>  <span class="n">before_action</span> <span class="ss">:set_link</span><span class="p">,</span> <span class="ss">only</span><span class="p">:</span> <span class="o">[</span><span class="ss">:show</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
+</span><span class='line'>    <span class="vi">@links</span> <span class="o">=</span> <span class="no">Link</span><span class="o">.</span><span class="n">all</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">show</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">params</span><span class="o">[</span><span class="ss">:slug</span><span class="o">]</span>
+</span><span class='line'>      <span class="vi">@link</span> <span class="o">=</span> <span class="no">Link</span><span class="o">.</span><span class="n">find_by</span><span class="p">(</span><span class="ss">slug</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:slug</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">if</span> <span class="n">redirect_to</span> <span class="vi">@link</span><span class="o">.</span><span class="n">given_url</span>
+</span><span class='line'>        <span class="vi">@link</span><span class="o">.</span><span class="n">clicks</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>        <span class="vi">@link</span><span class="o">.</span><span class="n">save</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="vi">@link</span> <span class="o">=</span> <span class="no">Link</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">create</span>
+</span><span class='line'>    <span class="vi">@link</span> <span class="o">=</span> <span class="no">Link</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">link_params</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">respond_to</span> <span class="k">do</span> <span class="o">|</span><span class="nb">format</span><span class="o">|</span>
+</span><span class='line'>      <span class="k">if</span> <span class="vi">@link</span><span class="o">.</span><span class="n">save</span>
+</span><span class='line'>        <span class="nb">format</span><span class="o">.</span><span class="n">html</span> <span class="p">{</span> <span class="n">redirect_to</span> <span class="n">root_path</span><span class="p">,</span> <span class="ss">notice</span><span class="p">:</span> <span class="s1">&#39;Link was successfully created.&#39;</span> <span class="p">}</span>
+</span><span class='line'>        <span class="nb">format</span><span class="o">.</span><span class="n">js</span>
+</span><span class='line'>        <span class="nb">format</span><span class="o">.</span><span class="n">json</span> <span class="p">{</span> <span class="n">render</span> <span class="ss">action</span><span class="p">:</span> <span class="s1">&#39;show&#39;</span><span class="p">,</span> <span class="ss">status</span><span class="p">:</span> <span class="ss">:created</span><span class="p">,</span> <span class="ss">location</span><span class="p">:</span> <span class="vi">@link</span> <span class="p">}</span>
+</span><span class='line'>      <span class="k">else</span>
+</span><span class='line'>        <span class="nb">format</span><span class="o">.</span><span class="n">html</span> <span class="p">{</span> <span class="n">render</span> <span class="ss">action</span><span class="p">:</span> <span class="s1">&#39;new&#39;</span> <span class="p">}</span>
+</span><span class='line'>        <span class="nb">format</span><span class="o">.</span><span class="n">json</span> <span class="p">{</span> <span class="n">render</span> <span class="ss">json</span><span class="p">:</span> <span class="vi">@link</span><span class="o">.</span><span class="n">errors</span><span class="p">,</span> <span class="ss">status</span><span class="p">:</span> <span class="ss">:unprocessable_entity</span> <span class="p">}</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kp">private</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">set_link</span>
+</span><span class='line'>      <span class="vi">@link</span> <span class="o">=</span> <span class="no">Link</span><span class="o">.</span><span class="n">find_by</span><span class="p">(</span><span class="ss">slug</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:slug</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">link_params</span>
+</span><span class='line'>      <span class="n">params</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="ss">:link</span><span class="p">)</span><span class="o">.</span><span class="n">permit</span><span class="p">(</span><span class="ss">:given_url</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I also added the ability to route a slug on a naked url to the show action.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="n">get</span> <span class="s1">&#39;:slug&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;links#show&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is so the URL http://acal.io/slug will naturally get routed to the long URL that the corresponding slug was made for. It also increments every time the link is clicked. If the user instead goes to http://acal.io/links/id, no incrementing is done, and they are taken to the show page for that link - same as normal.</p>
+
+<p>I also knew that I wanted to render out trending links on root_path of the app, so I generated a home controller.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">rails</span> <span class="n">g</span> <span class="n">controller</span> <span class="n">home</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I modified the routes file to make the index action on the home controller the root</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="n">root</span> <span class="s1">&#39;home#index&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I decided to only have the top 12 trending items, since it&#8217;s allows for bootstrap to gracefully degrade from 4 to 3 to 2 to 1 columns. I sliced them into arrays of 4 so that I could make the bootstrap rows down the line using the each_slice method.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
+</span><span class='line'>    <span class="vi">@link</span> <span class="o">=</span> <span class="no">Link</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>    <span class="vi">@top_links</span> <span class="o">=</span> <span class="no">Link</span><span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="ss">clicks</span><span class="p">:</span> <span class="ss">:desc</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span><span class="o">.</span><span class="n">each_slice</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">to_a</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I also wanted a page that just listed all the links created as a table, so first made a rotue</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="n">get</span> <span class="s1">&#39;/all&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;home#all&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I wanted to be sure not to overwhelm the server in case this app received a lot of requests to shorten the url. I opted to use the will_paginate gem</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">gem</span> <span class="s1">&#39;will_paginate&#39;</span><span class="p">,</span> <span class="s1">&#39;~&gt; 3.0&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then I filled out the all action, and decided for now I&#8217;ll just put 4 rows per page as the app is small.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">all</span>
+</span><span class='line'>    <span class="vi">@link</span> <span class="o">=</span> <span class="no">Link</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>    <span class="vi">@links</span> <span class="o">=</span> <span class="no">Link</span><span class="o">.</span><span class="n">paginate</span><span class="p">(</span><span class="ss">:page</span> <span class="o">=&gt;</span> <span class="n">params</span><span class="o">[</span><span class="ss">:page</span><span class="o">]</span><span class="p">,</span> <span class="ss">:per_page</span> <span class="o">=&gt;</span> <span class="mi">4</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h1>Front End</h1>
+
+
+<p>I first made a new partial for a new link that would persist on top. I included a blank div that I wanted to have so I could append the result later on.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='erb'><span class='line'><span class="x">&lt;div class=&quot;row&quot;&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">&lt;%=</span> <span class="n">render</span> <span class="s1">&#39;links/form&#39;</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">&lt;div class=&quot;result&quot;&gt;</span>
+</span><span class='line'><span class="x">&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I then modified the auto generated title, added the partial site wide and wrapped everything in a bootstrap container</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='erb'><span class='line'><span class="x">&lt;!DOCTYPE html&gt;</span>
+</span><span class='line'><span class="x">&lt;html&gt;</span>
+</span><span class='line'><span class="x">&lt;head&gt;</span>
+</span><span class='line'><span class="x">  &lt;title&gt;Url Shortener&lt;/title&gt;</span>
+</span><span class='line'><span class="x">  </span><span class="cp">&lt;%=</span> <span class="n">stylesheet_link_tag</span>    <span class="s2">&quot;application&quot;</span><span class="p">,</span> <span class="ss">media</span><span class="p">:</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;data-turbolinks-track&quot;</span> <span class="o">=&gt;</span> <span class="kp">true</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">  </span><span class="cp">&lt;%=</span> <span class="n">javascript_include_tag</span> <span class="s2">&quot;application&quot;</span><span class="p">,</span> <span class="s2">&quot;data-turbolinks-track&quot;</span> <span class="o">=&gt;</span> <span class="kp">true</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">  </span><span class="cp">&lt;%=</span> <span class="n">csrf_meta_tags</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;/head&gt;</span>
+</span><span class='line'><span class="x">&lt;body&gt;</span>
+</span><span class='line'><span class="x">  &lt;div class=&quot;container&quot;&gt;</span>
+</span><span class='line'><span class="x">    </span><span class="cp">&lt;%=</span> <span class="n">render</span> <span class="s1">&#39;layouts/new_link&#39;</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">    </span><span class="cp">&lt;%=</span> <span class="k">yield</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">  &lt;/div&gt;</span>
+</span><span class='line'><span class="x">&lt;/body&gt;</span>
+</span><span class='line'><span class="x">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I then modified the link form partial. I wanted to make this submit asyncronously so added a remote:true option to the form. I also added a logo, some placeholder text, and some bootstrap styling.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='erb'><span class='line'><span class="cp">&lt;%=</span> <span class="n">form_for</span><span class="p">(</span><span class="vi">@link</span><span class="p">,</span> <span class="ss">remote</span><span class="p">:</span> <span class="kp">true</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">  </span><span class="cp">&lt;%</span> <span class="k">if</span> <span class="vi">@link</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">any?</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">    &lt;div id=&quot;error_explanation&quot;&gt;</span>
+</span><span class='line'><span class="x">      &lt;h2&gt;</span><span class="cp">&lt;%=</span> <span class="n">pluralize</span><span class="p">(</span><span class="vi">@link</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">count</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">)</span> <span class="cp">%&gt;</span><span class="x"> prohibited this link from being saved:&lt;/h2&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">      &lt;ul&gt;</span>
+</span><span class='line'><span class="x">      </span><span class="cp">&lt;%</span> <span class="vi">@link</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">full_messages</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">msg</span><span class="o">|</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">        &lt;li&gt;</span><span class="cp">&lt;%=</span> <span class="n">msg</span> <span class="cp">%&gt;</span><span class="x">&lt;/li&gt;</span>
+</span><span class='line'><span class="x">      </span><span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">      &lt;/ul&gt;</span>
+</span><span class='line'><span class="x">    &lt;/div&gt;</span>
+</span><span class='line'><span class="x">  </span><span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">  &lt;div&gt;</span>
+</span><span class='line'><span class="x">    </span><span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="n">image_tag</span><span class="p">(</span><span class="s2">&quot;logo.png&quot;</span><span class="p">),</span> <span class="n">root_path</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">  &lt;/div&gt;</span>
+</span><span class='line'><span class="x">  &lt;div class=&quot;field&quot;&gt;</span>
+</span><span class='line'><span class="x">    </span><span class="cp">&lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:given_url</span><span class="p">,</span> <span class="ss">:class</span> <span class="o">=&gt;</span> <span class="s2">&quot;form-control&quot;</span><span class="p">,</span> <span class="ss">:placeholder</span> <span class="o">=&gt;</span> <span class="s2">&quot;Paste a link to shorten&quot;</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">  &lt;/div&gt;</span>
+</span><span class='line'><span class="x">  &lt;div class=&quot;actions&quot;&gt;</span>
+</span><span class='line'><span class="x">    </span><span class="cp">&lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">submit</span> <span class="s1">&#39;Shorten Me&#39;</span><span class="p">,</span> <span class="ss">:class</span> <span class="o">=&gt;</span> <span class="s2">&quot;btn btn-primary&quot;</span><span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">  &lt;/div&gt;</span>
+</span><span class='line'><span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I then wanted to append the short link result back onto the page once it was processed. I referred to this earlier in the post when I was making the links controller. In order to do this I made a new file</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='erb'><span class='line'><span class="x">$(&#39;.result&#39;).append(&#39;&lt;p class=&quot;short_url&quot;&gt;Your Shortend Link: </span><span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="vi">@link</span><span class="o">.</span><span class="n">display_slug</span><span class="p">,</span> <span class="vi">@link</span><span class="o">.</span><span class="n">slug</span><span class="p">,</span> <span class="ss">target</span><span class="p">:</span> <span class="s2">&quot;_blank&quot;</span> <span class="cp">%&gt;</span><span class="x">&lt;/p&gt;&#39;)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I then made the show page. I added in a bit of formatting, both from bootstrap, and from my own css.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='erb'><span class='line'><span class="x">&lt;p id=&quot;notice&quot;&gt;</span><span class="cp">&lt;%=</span> <span class="n">notice</span> <span class="cp">%&gt;</span><span class="x">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">&lt;%</span> <span class="k">if</span> <span class="vi">@link</span><span class="o">.</span><span class="n">snapshot</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;div class=&quot;screenshot-outer-individual&quot;&gt;</span><span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="n">image_tag</span><span class="p">(</span><span class="vi">@link</span><span class="o">.</span><span class="n">snapshot</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="s2">&quot;screenshot&quot;</span><span class="p">),</span> <span class="vi">@link</span> <span class="cp">%&gt;</span><span class="x">&lt;/div&gt;</span>
+</span><span class='line'><span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;p class=&quot;title&quot;&gt;</span><span class="cp">&lt;%=</span> <span class="vi">@link</span><span class="o">.</span><span class="n">title</span> <span class="cp">%&gt;</span><span class="x">&lt;/p&gt;</span>
+</span><span class='line'><span class="x">&lt;p class=&quot;short_url&quot;&gt;</span><span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="vi">@link</span><span class="o">.</span><span class="n">display_slug</span><span class="p">,</span> <span class="vi">@link</span><span class="o">.</span><span class="n">slug</span><span class="p">,</span> <span class="ss">target</span><span class="p">:</span> <span class="s1">&#39;_blank&#39;</span> <span class="cp">%&gt;</span><span class="x">&lt;/p&gt;</span>
+</span><span class='line'><span class="x">&lt;ul class=&quot;click_time&quot;&gt;</span>
+</span><span class='line'><span class="x">  &lt;li&gt;&lt;span class=&quot;badge&quot;&gt;&lt;span class=&quot;clicks&quot;&gt;</span><span class="cp">&lt;%=</span> <span class="vi">@link</span><span class="o">.</span><span class="n">clicks</span> <span class="cp">%&gt;</span><span class="x">&lt;/span&gt;&lt;/span&gt; clicks&lt;/li&gt;</span>
+</span><span class='line'><span class="x">  &lt;li&gt;&lt;span class=&quot;time&quot;&gt;</span><span class="cp">&lt;%=</span> <span class="n">time_ago_in_words</span><span class="p">(</span><span class="vi">@link</span><span class="o">.</span><span class="n">created_at</span><span class="p">)</span> <span class="cp">%&gt;</span><span class="x"> ago&lt;/span&gt;&lt;/li&gt;</span>
+</span><span class='line'><span class="x">&lt;/ul&gt;</span>
+</span><span class='line'><span class="x">&lt;p class=&quot;long_url&quot;&gt;</span><span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="vi">@link</span><span class="o">.</span><span class="n">given_url</span><span class="p">,</span> <span class="vi">@link</span><span class="o">.</span><span class="n">given_url</span> <span class="cp">%&gt;</span><span class="x">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="s1">&#39;Back&#39;</span><span class="p">,</span> <span class="n">root_path</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I also wanted to make sure that non-valid URLs could not be submitted. There are a lot of ways to do this, but I settled with doing client side validation.</p>
+
+<p>I first installed the jquery-validation-rails gem</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">gem</span> <span class="s1">&#39;jquery-validation-rails&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I then added javascript files to application.js</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="c1">//= require jquery.validate</span>
+</span><span class='line'><span class="c1">//= require jquery.validate.additional-methods</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I then made a javascript validation that required both the presence of a url, and it&#8217;s validity according to a regex</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span><span class="p">.</span><span class="nx">validator</span><span class="p">.</span><span class="nx">addMethod</span><span class="p">(</span>
+</span><span class='line'>        <span class="s2">&quot;regex&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">element</span><span class="p">,</span> <span class="nx">regexp</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="kd">var</span> <span class="nx">re</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span><span class="nx">regexp</span><span class="p">);</span>
+</span><span class='line'>            <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">optional</span><span class="p">(</span><span class="nx">element</span><span class="p">)</span> <span class="o">||</span> <span class="nx">re</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="s2">&quot;Looks like something is wrong with your URL&quot;</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#new_link&#39;</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">password_validator</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#new_link&#39;</span><span class="p">).</span><span class="nx">validate</span><span class="p">({</span>
+</span><span class='line'>    <span class="nx">rules</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="s1">&#39;link[given_url]&#39;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">regex</span><span class="o">:</span> <span class="s2">&quot;^(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}&quot;</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nx">messages</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="s1">&#39;link[given_url]&#39;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">required</span><span class="o">:</span> <span class="s1">&#39;Please put in a URL&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I then made the site index page</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='erb'><span class='line'><span class="x">&lt;div class=&quot;title&quot;&gt;</span>
+</span><span class='line'><span class="x">  &lt;h1&gt;Trending links&lt;/h1&gt;</span>
+</span><span class='line'><span class="x">&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">&lt;%</span> <span class="vi">@top_links</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">array_of_four</span><span class="o">|</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">  &lt;div class=&quot;row&quot;&gt;</span>
+</span><span class='line'><span class="x">    </span><span class="cp">&lt;%</span> <span class="n">array_of_four</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">link</span><span class="o">|</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">      &lt;div class=&quot;col-lg-3 col-md-4 col-sm-6 col-xs-12 link&quot;&gt;</span>
+</span><span class='line'><span class="x">        </span><span class="cp">&lt;%</span> <span class="k">if</span> <span class="n">link</span><span class="o">.</span><span class="n">snapshot</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">        &lt;div class=&quot;screenshot-outer&quot;&gt;</span><span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="n">image_tag</span><span class="p">(</span><span class="n">link</span><span class="o">.</span><span class="n">snapshot</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="s2">&quot;screenshot&quot;</span><span class="p">),</span> <span class="n">link</span> <span class="cp">%&gt;</span><span class="x">&lt;/div&gt;</span>
+</span><span class='line'><span class="x">        </span><span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">        &lt;p class=&quot;title&quot;&gt;</span><span class="cp">&lt;%=</span> <span class="n">link</span><span class="o">.</span><span class="n">title</span> <span class="cp">%&gt;</span><span class="x">&lt;/p&gt;</span>
+</span><span class='line'><span class="x">        &lt;p class=&quot;short_url&quot;&gt;</span><span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="n">link</span><span class="o">.</span><span class="n">display_slug</span><span class="p">,</span> <span class="n">link</span><span class="o">.</span><span class="n">slug</span><span class="p">,</span> <span class="ss">target</span><span class="p">:</span> <span class="s1">&#39;_blank&#39;</span> <span class="cp">%&gt;</span><span class="x">&lt;/p&gt;</span>
+</span><span class='line'><span class="x">        &lt;ul class=&quot;click_time&quot;&gt;</span>
+</span><span class='line'><span class="x">          &lt;li&gt;&lt;span class=&quot;badge&quot;&gt;&lt;span class=&quot;clicks&quot;&gt;</span><span class="cp">&lt;%=</span> <span class="n">link</span><span class="o">.</span><span class="n">clicks</span> <span class="cp">%&gt;</span><span class="x">&lt;/span&gt;&lt;/span&gt; clicks&lt;/li&gt;</span>
+</span><span class='line'><span class="x">          &lt;li&gt;&lt;span class=&quot;time&quot;&gt;</span><span class="cp">&lt;%=</span> <span class="n">time_ago_in_words</span><span class="p">(</span><span class="n">link</span><span class="o">.</span><span class="n">created_at</span><span class="p">)</span> <span class="cp">%&gt;</span><span class="x"> ago&lt;/span&gt;&lt;/li&gt;</span>
+</span><span class='line'><span class="x">        &lt;/ul&gt;</span>
+</span><span class='line'><span class="x">        &lt;p class=&quot;long_url&quot;&gt;</span><span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="n">link</span><span class="o">.</span><span class="n">given_url</span><span class="p">,</span> <span class="n">link</span><span class="o">.</span><span class="n">given_url</span> <span class="cp">%&gt;</span><span class="x">&lt;/p&gt;</span>
+</span><span class='line'><span class="x">      &lt;/div&gt;</span>
+</span><span class='line'><span class="x">    </span><span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">  &lt;/div&gt;</span>
+</span><span class='line'><span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'>
+</span><span class='line'><span class="x">&lt;p class=&quot;bottom_nav&quot;&gt;</span><span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="s1">&#39;See all of the links&#39;</span><span class="p">,</span> <span class="s1">&#39;/all&#39;</span> <span class="cp">%&gt;</span><span class="x">&lt;/p&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I finally made the all page</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='erb'><span class='line'><span class="x">&lt;div class=&quot;table-responsive&quot;&gt;</span>
+</span><span class='line'><span class="x">  &lt;table class=&quot;table&quot;&gt;</span>
+</span><span class='line'><span class="x">    &lt;thead&gt;</span>
+</span><span class='line'><span class="x">      &lt;tr&gt;</span>
+</span><span class='line'><span class="x">        &lt;th&gt;Given url&lt;/th&gt;</span>
+</span><span class='line'><span class="x">        &lt;th&gt;Short Link&lt;/th&gt;</span>
+</span><span class='line'><span class="x">        &lt;th&gt;Title&lt;/th&gt;</span>
+</span><span class='line'><span class="x">        &lt;th&gt;Clicks&lt;/th&gt;</span>
+</span><span class='line'><span class="x">        &lt;th&gt;&lt;/th&gt;</span>
+</span><span class='line'><span class="x">        &lt;th&gt;&lt;/th&gt;</span>
+</span><span class='line'><span class="x">      &lt;/tr&gt;</span>
+</span><span class='line'><span class="x">    &lt;/thead&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">    &lt;tbody&gt;</span>
+</span><span class='line'><span class="x">      </span><span class="cp">&lt;%</span> <span class="vi">@links</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">link</span><span class="o">|</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">        &lt;tr&gt;</span>
+</span><span class='line'><span class="x">          &lt;td&gt;</span><span class="cp">&lt;%=</span> <span class="n">link</span><span class="o">.</span><span class="n">given_url</span> <span class="cp">%&gt;</span><span class="x">&lt;/td&gt;</span>
+</span><span class='line'><span class="x">          &lt;td&gt;</span><span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="n">link</span><span class="o">.</span><span class="n">display_slug</span><span class="p">,</span> <span class="n">link</span><span class="o">.</span><span class="n">slug</span><span class="p">,</span> <span class="ss">target</span><span class="p">:</span> <span class="s1">&#39;_blank&#39;</span> <span class="cp">%&gt;</span><span class="x">&lt;/td&gt;</span>
+</span><span class='line'><span class="x">          &lt;td&gt;</span><span class="cp">&lt;%=</span> <span class="n">link</span><span class="o">.</span><span class="n">title</span> <span class="cp">%&gt;</span><span class="x">&lt;/td&gt;</span>
+</span><span class='line'><span class="x">          &lt;td&gt;</span><span class="cp">&lt;%=</span> <span class="n">link</span><span class="o">.</span><span class="n">clicks</span> <span class="cp">%&gt;</span><span class="x">&lt;/td&gt;</span>
+</span><span class='line'><span class="x">          &lt;td&gt;</span><span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="s1">&#39;Show&#39;</span><span class="p">,</span> <span class="n">link</span> <span class="cp">%&gt;</span><span class="x">&lt;/td&gt;</span>
+</span><span class='line'><span class="x">        &lt;/tr&gt;</span>
+</span><span class='line'><span class="x">      </span><span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">    &lt;/tbody&gt;</span>
+</span><span class='line'><span class="x">  &lt;/table&gt;</span>
+</span><span class='line'><span class="x">&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="cp">&lt;%=</span> <span class="n">will_paginate</span> <span class="vi">@links</span> <span class="cp">%&gt;</span><span class="x"></span>
+</span><span class='line'>
+</span><span class='line'><span class="x">&lt;p class=&quot;bottom_nav&quot;&gt;</span><span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="s1">&#39;See just the trending links&#39;</span><span class="p">,</span> <span class="n">root_path</span> <span class="cp">%&gt;</span><span class="x">&lt;/p&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Along the way I added a lot of custom css. Of note is an animated yellow flash of the new shortened link.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nt">body</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">background-color</span><span class="o">:</span><span class="nb">yellow</span><span class="p">;</span>
+</span><span class='line'><span class="k">padding-bottom</span><span class="o">:</span> <span class="m">100px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">span</span><span class="nc">.clicks</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">font-size</span><span class="o">:</span> <span class="m">50px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">span</span><span class="nc">.time</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">font-style</span><span class="o">:</span> <span class="k">italic</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">img</span><span class="nc">.screenshot</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">width</span><span class="o">:</span><span class="m">100</span><span class="o">%</span><span class="p">;</span>
+</span><span class='line'>  <span class="c">/*position: absolute;*/</span>
+</span><span class='line'>  <span class="c">/*clip: rect(0px,200px,300px,0px);*/</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">form</span> <span class="nt">div</span> <span class="p">{</span>
+</span><span class='line'>  <span class="c">/*float:left;*/</span>
+</span><span class='line'>  <span class="k">display</span><span class="o">:</span><span class="k">inline</span><span class="o">-</span><span class="k">block</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">form</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">text-align</span><span class="o">:</span> <span class="k">center</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">margin-top</span><span class="o">:</span><span class="m">20px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nt">form</span> <span class="nt">div</span><span class="nc">.field</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">margin-top</span><span class="o">:</span><span class="m">12px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">margin-left</span><span class="o">:</span><span class="m">10px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">form</span> <span class="nt">div</span><span class="nc">.actions</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">margin-top</span><span class="o">:</span><span class="m">12px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">margin-left</span><span class="o">:</span><span class="m">10px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">h1</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">text-align</span><span class="o">:</span> <span class="k">center</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nt">div</span><span class="nc">.title</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">margin-bottom</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nt">div</span><span class="nc">.result</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">height</span><span class="o">:</span> <span class="m">60px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@keyframes</span> <span class="nt">myfirst</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="nt">from</span> <span class="p">{</span><span class="k">background</span><span class="o">:</span> <span class="nb">yellow</span><span class="p">;}</span>
+</span><span class='line'>  <span class="nt">to</span> <span class="p">{</span><span class="k">background</span><span class="o">:</span> <span class="k">none</span><span class="p">;}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@-webkit-keyframes</span> <span class="nt">myfirst</span> <span class="c">/* Safari and Chrome */</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="nt">from</span> <span class="p">{</span><span class="k">background</span><span class="o">:</span> <span class="nb">yellow</span><span class="p">;}</span>
+</span><span class='line'>  <span class="nt">to</span> <span class="p">{</span><span class="k">background</span><span class="o">:</span> <span class="k">none</span><span class="p">;}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">div</span><span class="nc">.result</span> <span class="nt">p</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">margin</span><span class="o">:</span><span class="m">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">padding</span><span class="o">:</span><span class="m">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">line-height</span><span class="o">:</span> <span class="m">60px</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">animation</span><span class="o">:</span> <span class="n">myfirst</span> <span class="m">1s</span><span class="p">;</span>
+</span><span class='line'>  <span class="o">-</span><span class="n">webkit</span><span class="o">-</span><span class="n">animation</span><span class="o">:</span> <span class="n">myfirst</span> <span class="m">1s</span><span class="p">;</span> <span class="c">/* Safari and Chrome */</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">div</span><span class="nc">.link</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">margin-bottom</span><span class="o">:</span> <span class="m">60px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nt">p</span><span class="nc">.bottom_nav</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">text-align</span><span class="o">:</span> <span class="k">center</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">p</span><span class="nc">.short_url</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">text-align</span><span class="o">:</span> <span class="k">center</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">font-size</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">margin-top</span><span class="o">:</span><span class="m">10px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">p</span><span class="nc">.title</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">text-align</span><span class="o">:</span> <span class="k">center</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">p</span><span class="nc">.long_url</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">text-align</span><span class="o">:</span> <span class="k">center</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">color</span><span class="o">:</span><span class="m">#DCDCDC</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">font-size</span><span class="o">:</span> <span class="m">10px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">padding-left</span><span class="o">:</span> <span class="m">10px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">padding-right</span><span class="o">:</span> <span class="m">10px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">overflow</span><span class="o">:</span> <span class="k">hidden</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">ul</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">padding</span><span class="o">:</span><span class="m">0px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">list-style</span><span class="o">:</span><span class="k">none</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">height</span><span class="o">:</span><span class="m">400px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">ul</span><span class="nc">.click_time</span> <span class="nt">li</span><span class="nd">:first-child</span><span class="p">{</span>
+</span><span class='line'>  <span class="k">float</span><span class="o">:</span><span class="k">left</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">ul</span><span class="nc">.click_time</span> <span class="nt">li</span><span class="nd">:last-child</span><span class="p">{</span>
+</span><span class='line'>  <span class="k">margin-top</span><span class="o">:</span><span class="m">55px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">float</span><span class="o">:</span><span class="k">right</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">ul</span><span class="nc">.click_time</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">height</span><span class="o">:</span><span class="m">70px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">margin-left</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">margin-right</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">li</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">margin-top</span><span class="o">:</span><span class="m">20px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">div</span><span class="nc">.screenshot-outer</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">height</span><span class="o">:</span><span class="m">200px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">overflow</span><span class="o">:</span> <span class="k">hidden</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">border</span><span class="o">:</span><span class="m">1px</span> <span class="k">solid</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">border</span><span class="o">-</span><span class="n">radius</span><span class="o">:</span><span class="m">5px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">border-color</span><span class="o">:</span><span class="m">#DCDCDC</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">div</span><span class="nc">.screenshot-outer-individual</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">height</span><span class="o">:</span><span class="m">340px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">overflow</span><span class="o">:</span> <span class="k">hidden</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">border</span><span class="o">:</span><span class="m">1px</span> <span class="k">solid</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">border</span><span class="o">-</span><span class="n">radius</span><span class="o">:</span><span class="m">5px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">border-color</span><span class="o">:</span><span class="m">#DCDCDC</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">div</span><span class="nc">.screenshot-outer</span> <span class="nt">img</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">padding</span><span class="o">:</span><span class="m">10px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h1>Deploying to Heroku</h1>
+
+
+<p>I added a few Heroku specific gems</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">gem</span> <span class="s1">&#39;rails_12factor&#39;</span><span class="p">,</span> <span class="ss">group</span><span class="p">:</span> <span class="ss">:production</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;unicorn&#39;</span>
+</span><span class='line'><span class="n">ruby</span> <span class="s2">&quot;2.0.0&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I needed to download a special version of IMGKit.</p>
+
+<p>https://wkhtmltopdf.googlecode.com/files/wkhtmltoimage-0.10.0_rc2-static-amd64.tar.bz2</p>
+
+<p>I unzipped it and put it in the bin directory.</p>
+
+<p>I had to make a configure file for IMGKit so that this would actually take effect.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">IMGKit</span><span class="o">.</span><span class="n">configure</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">wkhtmltoimage</span> <span class="o">=</span> <span class="no">Rails</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;bin&#39;</span><span class="p">,</span> <span class="s1">&#39;wkhtmltoimage-amd64&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_s</span> <span class="k">if</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RACK_ENV&#39;</span><span class="o">]</span> <span class="o">==</span> <span class="s1">&#39;production&#39;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I also had to modify config.ru to get CarrierWave to work</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># This file is used by Rack-based servers to start the application.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">require</span> <span class="o">::</span><span class="no">File</span><span class="o">.</span><span class="n">expand_path</span><span class="p">(</span><span class="s1">&#39;../config/environment&#39;</span><span class="p">,</span>  <span class="bp">__FILE__</span><span class="p">)</span>
+</span><span class='line'><span class="n">use</span> <span class="ss">Rack</span><span class="p">:</span><span class="ss">:Static</span><span class="p">,</span> <span class="ss">:urls</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s1">&#39;/carrierwave&#39;</span><span class="o">]</span><span class="p">,</span> <span class="ss">:root</span> <span class="o">=&gt;</span> <span class="s1">&#39;tmp&#39;</span>
+</span><span class='line'><span class="n">run</span> <span class="no">Rails</span><span class="o">.</span><span class="n">application</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I then made a Procfile</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="ss">web</span><span class="p">:</span> <span class="n">bundle</span> <span class="nb">exec</span> <span class="n">unicorn</span> <span class="o">-</span><span class="nb">p</span> <span class="vg">$PORT</span> <span class="o">-</span><span class="n">c</span> <span class="o">.</span><span class="n">/config</span><span class="o">/</span><span class="n">unicorn</span><span class="o">.</span><span class="n">rb</span>
+</span><span class='line'><span class="ss">worker</span><span class="p">:</span> <span class="n">bundle</span> <span class="nb">exec</span> <span class="n">sidekiq</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I then had to configure unicorn</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">worker_processes</span> <span class="nb">Integer</span><span class="p">(</span><span class="no">ENV</span><span class="o">[</span><span class="s2">&quot;WEB_CONCURRENCY&quot;</span><span class="o">]</span> <span class="o">||</span> <span class="mi">3</span><span class="p">)</span>
+</span><span class='line'><span class="n">timeout</span> <span class="mi">15</span>
+</span><span class='line'><span class="n">preload_app</span> <span class="kp">true</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">before_fork</span> <span class="k">do</span> <span class="o">|</span><span class="n">server</span><span class="p">,</span> <span class="n">worker</span><span class="o">|</span>
+</span><span class='line'>  <span class="no">Signal</span><span class="o">.</span><span class="n">trap</span> <span class="s1">&#39;TERM&#39;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s1">&#39;Unicorn master intercepting TERM and sending myself QUIT instead&#39;</span>
+</span><span class='line'>    <span class="no">Process</span><span class="o">.</span><span class="n">kill</span> <span class="s1">&#39;QUIT&#39;</span><span class="p">,</span> <span class="no">Process</span><span class="o">.</span><span class="n">pid</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">defined?</span><span class="p">(</span><span class="ss">ActiveRecord</span><span class="p">:</span><span class="ss">:Base</span><span class="p">)</span> <span class="ow">and</span>
+</span><span class='line'>    <span class="ss">ActiveRecord</span><span class="p">:</span><span class="ss">:Base</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">disconnect!</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">after_fork</span> <span class="k">do</span> <span class="o">|</span><span class="n">server</span><span class="p">,</span> <span class="n">worker</span><span class="o">|</span>
+</span><span class='line'>  <span class="no">Signal</span><span class="o">.</span><span class="n">trap</span> <span class="s1">&#39;TERM&#39;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s1">&#39;Unicorn worker intercepting TERM and doing nothing. Wait for master to send QUIT&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">defined?</span><span class="p">(</span><span class="ss">ActiveRecord</span><span class="p">:</span><span class="ss">:Base</span><span class="p">)</span> <span class="ow">and</span>
+</span><span class='line'>    <span class="ss">ActiveRecord</span><span class="p">:</span><span class="ss">:Base</span><span class="o">.</span><span class="n">establish_connection</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I created, pushed, and migrated the app on Heroku</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">heroku</span> <span class="n">create</span>
+</span><span class='line'><span class="n">git</span> <span class="n">push</span> <span class="n">heroku</span> <span class="n">master</span>
+</span><span class='line'><span class="n">heroku</span> <span class="n">run</span> <span class="n">rake</span> <span class="ss">db</span><span class="p">:</span><span class="n">migrate</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I then configured the environmental variables</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">heroku</span> <span class="ss">config</span><span class="p">:</span><span class="n">set</span> <span class="no">AWS_ACCESS_KEY_ID</span><span class="o">=</span><span class="no">REDACTED</span>
+</span><span class='line'><span class="n">heroku</span> <span class="ss">config</span><span class="p">:</span><span class="n">set</span> <span class="no">AWS_SECRET_ACCESS_KEY</span><span class="o">=</span><span class="no">REDACTED</span>
+</span><span class='line'><span class="n">heroku</span> <span class="ss">config</span><span class="p">:</span><span class="n">set</span> <span class="no">AWS_BUCKET</span><span class="o">=</span><span class="no">REDACTED</span>
+</span><span class='line'><span class="n">heroku</span> <span class="ss">config</span><span class="p">:</span><span class="n">set</span> <span class="no">BASE_URL</span><span class="o">=</span><span class="ss">http</span><span class="p">:</span><span class="sr">//</span><span class="n">acal</span><span class="o">.</span><span class="n">io</span><span class="o">/</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then I added redistogo and added another dyno so that sidekiq would run</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">heroku</span> <span class="ss">addons</span><span class="p">:</span><span class="n">add</span> <span class="n">redistogo</span>
+</span><span class='line'><span class="n">heroku</span> <span class="ss">ps</span><span class="p">:</span><span class="n">scale</span> <span class="n">worker</span><span class="o">+</span><span class="mi">1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally I bought a custom domain through hover. I had to do first add a CNAME record called &#8216;www&#8217; with the target being my heroku domain.
+CNAME
+www
+example.herokuapp.com.</p>
+
+<p>I also set up domain forwarding so that a naked url would just redirect to www. Heroku does not support naked domains out of the box. There are other solutions out there, but they cost money.</p>
+
+<p>I then associated the domain with my app</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">heroku</span> <span class="ss">domains</span><span class="p">:</span><span class="n">add</span> <span class="n">www</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h1>Conclusion</h1>
+
+
+<p>That seems like a lot, but it actually doesn&#8217;t take that long to do at all. It&#8217;s a great learning project for those of you just starting out as a developer. Let me know if you can actually use this to make your own URL shortener, or if there is something I missed. Best of luck!</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1424,6 +2677,10 @@ Problem 11</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/02/26/make-your-own-url-shortener-with-rails-4-and-heroku/">Make Your Own URL Shortener With Rails 4 and Heroku</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/06/14/alernative-to-figaro/">An Alernative To Figaro</a>
       </li>
     
@@ -1437,10 +2694,6 @@ Problem 11</p>
     
       <li class="post">
         <a href="/blog/2013/03/30/saturday-morning-ruby/">Saturday Morning Ruby</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/03/28/top-3-reasons-to-try-project-euler/">Top 3 Reasons To Try Project Euler</a>
       </li>
     
   </ul>
@@ -1502,7 +2755,7 @@ Problem 11</p>
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Andrew Callahan -
+  Copyright &copy; 2014 - Andrew Callahan -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 
