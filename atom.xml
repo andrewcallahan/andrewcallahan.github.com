@@ -4,7 +4,7 @@
   <title><![CDATA[Learning To Code]]></title>
   <link href="http://andrewcallahan.github.com/atom.xml" rel="self"/>
   <link href="http://andrewcallahan.github.com/"/>
-  <updated>2014-02-26T12:41:39-05:00</updated>
+  <updated>2014-02-26T12:43:20-05:00</updated>
   <id>http://andrewcallahan.github.com/</id>
   <author>
     <name><![CDATA[Andrew Callahan]]></name>
@@ -656,7 +656,7 @@
 </span><span class='line'>            <span class="kd">var</span> <span class="nx">re</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span><span class="nx">regexp</span><span class="p">);</span>
 </span><span class='line'>            <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">optional</span><span class="p">(</span><span class="nx">element</span><span class="p">)</span> <span class="o">||</span> <span class="nx">re</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
 </span><span class='line'>        <span class="p">},</span>
-</span><span class='line'>        <span class="s2">&quot;Looks like something is wrong with your URL&quot;</span>
+</span><span class='line'>        <span class="s2">&quot;Please enter a valid URL (using http)&quot;</span>
 </span><span class='line'><span class="p">);</span>
 </span><span class='line'>
 </span><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#new_link&#39;</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
