@@ -228,7 +228,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>First I made a method for actually getting the screenshot and page title. For now, these are just Sidekiq Workers which I&#8217;ll actually build later.</p>
+<p>First I made a method for actually getting the screenshot and page title. For now, these are just Sidekiq Workers which I&#8217;ll actually build later. Of note is that I had to pass in the ID of a link, and not the full object, in order to get SideKiq to work.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -248,7 +248,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I then made a screenshot worker, which captures a screenshot of each link. I needed to create a temporary file as an intermediate step, to ensure it worked with CarrierWave.</p>
+<p>I then made a screenshot worker, which captures a screenshot of each link. Because I had to pass in an ID, I first had to lookup the object. I then needed to create a temporary file of the screenshot as an intermediate step, to ensure it worked with CarrierWave. Finally I associated the screenshot with the link, which then allows triggers a call to Fog to upload the screenshot to S3.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
