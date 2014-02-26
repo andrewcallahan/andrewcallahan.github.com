@@ -9,7 +9,7 @@
   <meta name="author" content="Andrew Callahan">
 
   
-  <meta name="description" content="Ever wanted to make your very own URL shortener? Know a little bit of rails? Then you&#8217;re good to go! Here is what I ended up making: acal.io &hellip;">
+  <meta name="description" content="Ever wanted to make your very own URL shortener? Know a little bit of rails? Then you&#8217;re good to go! My goal was to make my own personal bit.ly &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -92,35 +92,37 @@
 
 <div class="entry-content"><p>Ever wanted to make your very own URL shortener? Know a little bit of rails? Then you&#8217;re good to go!</p>
 
+<p>My goal was to make my own personal bit.ly. I wanted a home page with a text box that I could paste in a URL, press a button, and get a shortened link back. I also wanted to track the number of times each of my links was clicked. I also wanted a very visual leaderboard of my top links as well as a tabular page of all my links. I also wanted to deploy the app live to the internet and use my own custom short domain.</p>
+
 <p>Here is what I ended up making: <a href="http://acal.io/">acal.io</a></p>
 
 <h1>Set Up</h1>
 
 
-<p>Make a new rails app with pg since I&#8217;m deploying to heroku</p>
+<p>The very first step was to a create new rails app with postgres since I knew that I would later be deploying to heroku</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">rails</span> <span class="kp">new</span> <span class="n">url</span><span class="o">-</span><span class="n">shortener</span> <span class="o">--</span><span class="n">database</span><span class="o">=</span><span class="n">postgresql</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>rails new url-shortener --database<span class="o">=</span>postgresql
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>add pry to gemfile</p>
+<p>The next thing I do to any new rails app is to add pry to gemfile. Pry is an amazing gem that really helps me develop. If you are not sure about using pry, or how it can help you I suggest you watch this <a href="https://www.youtube.com/watch?v=D9j_Mf91M0I">talk about REPL Driven Developemnt</a> from Ruby Conf 2013.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">gem</span> <span class="s1">&#39;pry&#39;</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>gem <span class="s1">&#39;pry&#39;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Download <a href="http://getbootstrap.com/">bootstrap</a> and unzip it.</p>
+<p>I knew that I wanted the app to look at least somewhat nice, so not being a designer I defaulted to using bootstrap. I download the latest copy of <a href="http://getbootstrap.com/">bootstrap</a> and unziped it.</p>
 
-<p>Add bootstrap.min.js to the folder vendor/assets/jacascripts. Then modify application.js to indicate this</p>
+<p>I added the file &#8216;bootstrap.min.js&#8217; to the folder vendor/assets/javascripts. Then modified application.js to indicate this</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='js'><span class='line'><span class="c1">//= require bootstrap.min</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Add bootstrap.min.css to the folder vendor/assets/stylesheets. Then modify application.css to indicate this</p>
+<p>I add the file &#8216;bootstrap.min.css&#8217; to the folder vendor/assets/stylesheets. Then I modified application.css to indicate this</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='css'><span class='line'> <span class="o">*=</span> <span class="nt">require</span> <span class="nt">bootstrap</span><span class="nc">.min</span>
@@ -132,21 +134,30 @@
 <h1>Models</h1>
 
 
-<p>Generate the scaffolding for the link</p>
+<p>Now I reached the &#8216;heart&#8217; of the application - the link model. I first generated the scaffolding for the link</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">rails</span> <span class="n">g</span> <span class="n">scaffold</span> <span class="n">link</span> <span class="n">given_url</span><span class="ss">:string</span> <span class="ss">slug</span><span class="p">:</span><span class="n">string</span> <span class="ss">clicks</span><span class="p">:</span><span class="n">integer</span> <span class="ss">snapshot</span><span class="p">:</span><span class="n">string</span> <span class="ss">title</span><span class="p">:</span><span class="n">string</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>rails g scaffold link given_url:string slug:string clicks:integer snapshot:string title:string
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Modify the default value for clicks BEFORE migrating. This is because you can&#8217;t increment a non-integer value (nil), which is the original default.</p>
+<p>I then went into the actual migration file and modified the default value for clicks BEFORE I migrated. This is because you can&#8217;t increment a non-integer value (nil), which is the original default.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">t</span><span class="o">.</span><span class="n">integer</span> <span class="ss">:clicks</span><span class="p">,</span>  <span class="ss">:default</span> <span class="o">=&gt;</span> <span class="mi">0</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Make a method to generate the slug aka the short part of the link after the base url. I&#8217;m using base 36, which allows really large numbers to be shown in just a few characters. For example the 1 Billionth link in the database will have a slug of &#8220;gjdgxs&#8221; - just 6 characters as opposed to the 10 characters in the number 1,000,000,000.</p>
+<p>I then migrated the database</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>rake db:migrate
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now that I had my model in place, I still needed to actually generate a short link for each URL that I pasted in.</p>
+
+<p>I made a method &#8216;generate_slug&#8217;, which creates the short part of the link after the base url. All this method does is take the unique id for a link, and converts it into it&#8217;s base 26 equivilant. Base 36 allows really large numbers to be shown in just a few characters. For example the 1 Billionth link in the database will have a slug of &#8220;gjdgxs&#8221; - just 6 characters as opposed to the 10 characters in the number&#8217;s ID (1,000,000,000).</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -159,28 +170,28 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Add the figaro gem</p>
+<p>But the slug alone is not enough. I want to show the user the entire full URL. To do this I want to create an environmental variable, and knowing that I will be storing some keys down the line anyway, I want to keep it just to my machine. I added the figaro gem to accomplish this, but there are <a href="http://andrewcallahan.github.io/blog/2013/06/14/alernative-to-figaro/">other ways to do this</a>, which I&#8217;ve written about before.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">gem</span> <span class="s2">&quot;figaro&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Then generate the application.yml file that git will ignore (so your passwords don&#8217;t get committed to the rest of the world)</p>
+<p>I then used figaro&#8217;s generate command to create the application.yml file that git will ignore (so your passwords don&#8217;t get committed to the rest of the world)</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">rails</span> <span class="n">generate</span> <span class="ss">figaro</span><span class="p">:</span><span class="n">install</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Then add the base url as an environmental variable to the application.yml file</p>
+<p>Then I add the base URL as an environmental variable to the application.yml file</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">BASE_URL</span><span class="p">:</span> <span class="s1">&#39;http://acal.io/&#39;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Make a convenience method to display the entire shortened url</p>
+<p>With this I was able to make a convenience method to display the entire shortened URL</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -191,7 +202,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I know I want to capture a screenshot as well as the page title. I will use IMGKit, CarrierWave and Fog for the screenshot and Mechanize for getting the page title. I also know upfront that I want to do this asynchronously, so I&#8217;ll also throw in SideKiq.</p>
+<p>In order to make the trending links section really pop visually, I figured getting a screenshot would do the trick. I also wanted to grab the title of each page, in order to give a bit more context to the end user. I used IMGKit to capture the screenshot, CarrierWave and Fog to associate a screenshot with a model and upload it to Amazon S3, and Mechanize for getting the page title. I also knew upfront that I want to do this asynchronously, so I&#8217;ll also threw in SideKiq.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -206,7 +217,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Make Amazon Environmental Variables</p>
+<p>I got my key&#8217;s from Amazon, and created a bucket on S3. I went back to my application.yml file and added these all as environmental variables, so I could call them elsewhere in the application.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -217,43 +228,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Configure CarrierWave</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">CarrierWave</span><span class="o">.</span><span class="n">configure</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
-</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="no">Rails</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;tmp&#39;</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">cache_dir</span> <span class="o">=</span> <span class="s1">&#39;carrierwave&#39;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">fog_credentials</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>    <span class="ss">:provider</span>               <span class="o">=&gt;</span> <span class="s1">&#39;AWS&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="ss">:aws_access_key_id</span>      <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;AWS_ACCESS_KEY_ID&#39;</span><span class="o">]</span><span class="p">,</span>
-</span><span class='line'>    <span class="ss">:aws_secret_access_key</span>  <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;AWS_SECRET_ACCESS_KEY&#39;</span><span class="o">]</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">fog_directory</span>  <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;AWS_BUCKET&#39;</span><span class="o">]</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now I can actually implement the screenshot in the link class</p>
-
-<p>First I add the upload functionality of CarrierWave</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="n">mount_uploader</span> <span class="ss">:snapshot</span><span class="p">,</span> <span class="no">SnapshotUploader</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Then I make a method for actually getting the screenshot and page title. For now, these are just Sidekiq Workers which I&#8217;ll actually build later.</p>
+<p>First I made a method for actually getting the screenshot and page title. For now, these are just Sidekiq Workers which I&#8217;ll actually build later.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -266,14 +241,14 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I then make sure to create the slug, capture the screenshot, and capture the page title by making after_create callbacks.</p>
+<p>I already had a method generate a slug, and now I had a method to both capture the screenshot and capture the page title. I decided to use after_create callbacks to make sure these things all happend after each new link was created.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="n">after_create</span> <span class="ss">:generate_slug</span><span class="p">,</span> <span class="ss">:screenshot_scrape</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I then make my screenshot worker</p>
+<p>I then made a screenshot worker, which captures a screenshot of each link. I needed to create a temporary file as an intermediate step, to ensure it worked with CarrierWave.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -306,7 +281,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Then I make my scrape worker</p>
+<p>Then I made a scrape worker, which scrapes the link and finds the page title.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -335,7 +310,34 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I finish up by making the uploader that CarrierWave needs. I am adding the cache_dir specifically to get around Heroku&#8217;s file writing permissions issues.</p>
+<p>Next I made a configuration file for CarrierWave, and made sure it would work on Heroku (which has permissions issues - more on that later)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">CarrierWave</span><span class="o">.</span><span class="n">configure</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="no">Rails</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;tmp&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">cache_dir</span> <span class="o">=</span> <span class="s1">&#39;carrierwave&#39;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">fog_credentials</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="ss">:provider</span>               <span class="o">=&gt;</span> <span class="s1">&#39;AWS&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="ss">:aws_access_key_id</span>      <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;AWS_ACCESS_KEY_ID&#39;</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>    <span class="ss">:aws_secret_access_key</span>  <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;AWS_SECRET_ACCESS_KEY&#39;</span><span class="o">]</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">fog_directory</span>  <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;AWS_BUCKET&#39;</span><span class="o">]</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I then made the uploader that CarrierWave needs. the store_dir method tells S3 the naming convention of the screenshots, and I just left it at the default. The cache_dir method is a way to get around Heroku&#8217;s file writing permissions issues. Basically Heroku won&#8217;t let you write files except in this one place, so I made sure to do this.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -362,12 +364,21 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
+<p>I finished up by adding the mount_uploader call to the link model.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="n">mount_uploader</span> <span class="ss">:snapshot</span><span class="p">,</span> <span class="no">SnapshotUploader</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
 
 
 <h1>Controllers</h1>
 
 
-<p>First up I make some modifications to the auto generated links controller. I decided to delete index, edit, update, and destroy functionality. These get into permissions issues, which could lead naturally to building out users and all sorts of other features that are not core to this app. I also wanted the create action to respond asynchronously, so added the ability to respond to format.js (more on this later).</p>
+<p>First up I make some modifications to the auto generated links controller. I decided to delete the index, edit, update, and destroy actions. These actions get into permissions issues, which could lead naturally to building out users and all sorts of other features that are not core to this app. I&#8217;m not a fan of feature creep, and recommend that you also limit the scope of your own projects whenever possible. I also knew that I wanted the create action to respond asynchronously. I didn&#8217;t want to have to do a hard page reload when you shortened the link, and like bit.ly does, it just appends your new short link back to the screen. To do this I added the ability for the create action to respond to format.js (more on this later).</p>
+
+<p>I also added the ability to route a slug on a naked url to the show action. This is so the URL http://acal.io/slug will naturally get routed to the long URL that the corresponding slug was made for. It also increments every time the link is clicked. If the user instead goes to http://acal.io/links/id, no incrementing is done, and they are taken to the show page for that link - same as normal.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -458,26 +469,24 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I also added the ability to route a slug on a naked url to the show action.</p>
+<p>I then updated the routes file to map the naked url with a slug to the show action.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="n">get</span> <span class="s1">&#39;:slug&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;links#show&#39;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>This is so the URL http://acal.io/slug will naturally get routed to the long URL that the corresponding slug was made for. It also increments every time the link is clicked. If the user instead goes to http://acal.io/links/id, no incrementing is done, and they are taken to the show page for that link - same as normal.</p>
-
-<p>I also knew that I wanted to render out trending links on root_path of the app, so I generated a home controller.</p>
+<p>I generally make a home controller for my apps, and it&#8217;s a common design pattern I&#8217;ve seen others do, so I generated a home controller.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">rails</span> <span class="n">g</span> <span class="n">controller</span> <span class="n">home</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>rails g controller home
 </span></code></pre></td></tr></table></div></figure>
 
 
 <p>I modified the routes file to make the index action on the home controller the root</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="n">root</span> <span class="s1">&#39;home#index&#39;</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>  root <span class="s1">&#39;home#index&#39;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -501,14 +510,14 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I wanted to be sure not to overwhelm the server in case this app received a lot of requests to shorten the url. I opted to use the will_paginate gem</p>
+<p>I wanted to be sure not to overwhelm the server in case this app received a lot of link shortening requests. I figured pagination would do the trick and I opted to use the will_paginate gem.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">gem</span> <span class="s1">&#39;will_paginate&#39;</span><span class="p">,</span> <span class="s1">&#39;~&gt; 3.0&#39;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Then I filled out the all action, and decided for now I&#8217;ll just put 4 rows per page as the app is small.</p>
+<p>Then I filled out the all action, and decided to just put 4 rows per page as the app is still small.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -526,7 +535,7 @@
 <h1>Front End</h1>
 
 
-<p>I first made a new partial for a new link that would persist on top. I included a blank div that I wanted to have so I could append the result later on.</p>
+<p>I first made a new partial &#8216;layouts/_new_link&#8217; for a new link that would persist on top of all the pages in the app. I included a blank div called &#8216;result&#8217; so I could append the result later on.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -545,7 +554,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I then modified the auto generated title, added the partial site wide and wrapped everything in a bootstrap container</p>
+<p>I then modified the &#8216;layout/application&#8217; file. I changed the auto generated title, added the new partial I just created and wrapped everything in a bootstrap container.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -580,7 +589,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I then modified the link form partial. I wanted to make this submit asyncronously so added a remote:true option to the form. I also added a logo, some placeholder text, and some bootstrap styling.</p>
+<p>I then modified the link form partial &#8216;links/_form&#8217;. I wanted to make this submit asyncronously so added a remote:true option to the form. I also added a logo, some placeholder text, and some bootstrap styling.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -629,14 +638,14 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I then wanted to append the short link result back onto the page once it was processed. I referred to this earlier in the post when I was making the links controller. In order to do this I made a new file</p>
+<p>I then wanted to append the short link result back onto the page once it was processed. I referred to this earlier in the post when I was making the links controller. In order to do this I made a new file called create.js.erb in the &#8216;views/links&#8217; folder.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='erb'><span class='line'><span class="x">$(&#39;.result&#39;).append(&#39;&lt;p class=&quot;short_url&quot;&gt;Your Shortend Link: </span><span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="vi">@link</span><span class="o">.</span><span class="n">display_slug</span><span class="p">,</span> <span class="vi">@link</span><span class="o">.</span><span class="n">slug</span><span class="p">,</span> <span class="ss">target</span><span class="p">:</span> <span class="s2">&quot;_blank&quot;</span> <span class="cp">%&gt;</span><span class="x">&lt;/p&gt;&#39;)</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I then made the show page. I added in a bit of formatting, both from bootstrap, and from my own css.</p>
+<p>I then made the &#8216;links/show&#8217; page. I added in a bit of formatting, both from bootstrap, and from my own css.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -671,14 +680,14 @@
 
 <p>I also wanted to make sure that non-valid URLs could not be submitted. There are a lot of ways to do this, but I settled with doing client side validation.</p>
 
-<p>I first installed the jquery-validation-rails gem</p>
+<p>I first installed the jquery-validation-rails gem, which is just an easy way to get the JQuery Validation Plugin into a rails app.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">gem</span> <span class="s1">&#39;jquery-validation-rails&#39;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I then added javascript files to application.js</p>
+<p>I then indicated that these files were part of my application in application.js</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -687,7 +696,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I then made a javascript validation that required both the presence of a url, and it&#8217;s validity according to a regex</p>
+<p>I then made the actual javascript validation that required both the presence of a url, and it&#8217;s validity according to a regex.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -862,7 +871,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Along the way I added a lot of custom css. Of note is an animated yellow flash of the new shortened link.</p>
+<p>Along the way I added a lot of custom css. Of note is an animated yellow flash of the new shortened link as it is appended to the page.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1154,7 +1163,7 @@
 <h1>Deploying to Heroku</h1>
 
 
-<p>I added a few Heroku specific gems</p>
+<p>Heroku makes deploying rails apps incredibly easy, and I use it for all my side projects. I first had to add the &#8216;rails_12factor&#8217; gem and a line indicating that I was using ruby 2.0.0. In order to get sidekiq to work I had to use unicorn, so included the &#8216;unicorn&#8217; gem too.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1165,13 +1174,11 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I needed to download a special version of IMGKit.</p>
+<p>Heroku does not play nicely with the IMGKit gem, and in order to make the screenshots work I needed to download a compiled version of IMGKit.</p>
 
 <p>https://wkhtmltopdf.googlecode.com/files/wkhtmltoimage-0.10.0_rc2-static-amd64.tar.bz2</p>
 
-<p>I unzipped it and put it in the bin directory.</p>
-
-<p>I had to make a configure file for IMGKit so that this would actually take effect.</p>
+<p>I unzipped it and put it in the &#8216;bin&#8217; directory of my application. I then made a configure file for IMGKit so that this would actually take effect.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1182,7 +1189,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I also had to modify config.ru to get CarrierWave to work</p>
+<p>I also had to modify config.ru to get CarrierWave to work. This again was a permissions issue with Heroku not allowing file write access, except for the one tmp directory.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1197,7 +1204,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I then made a Procfile</p>
+<p>I then made a Procfile, which is all Heroku needs to run redis and SideKiq for your application automatically.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1206,7 +1213,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I then had to configure unicorn</p>
+<p>I then had to make a configure file for unicorn.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1255,59 +1262,58 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I created, pushed, and migrated the app on Heroku</p>
+<p>I was finally ready to go live! I created, pushed, and migrated the app on Heroku</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">heroku</span> <span class="n">create</span>
-</span><span class='line'><span class="n">git</span> <span class="n">push</span> <span class="n">heroku</span> <span class="n">master</span>
-</span><span class='line'><span class="n">heroku</span> <span class="n">run</span> <span class="n">rake</span> <span class="ss">db</span><span class="p">:</span><span class="n">migrate</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>heroku create
+</span><span class='line'>git push heroku master
+</span><span class='line'>heroku run rake db:migrate
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I then configured the environmental variables</p>
+<p>I then configured the environmental variables on Heroku (remember, these are in application.yml which is ignored by git and thus not already on Heroku).</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">heroku</span> <span class="ss">config</span><span class="p">:</span><span class="n">set</span> <span class="no">AWS_ACCESS_KEY_ID</span><span class="o">=</span><span class="no">REDACTED</span>
-</span><span class='line'><span class="n">heroku</span> <span class="ss">config</span><span class="p">:</span><span class="n">set</span> <span class="no">AWS_SECRET_ACCESS_KEY</span><span class="o">=</span><span class="no">REDACTED</span>
-</span><span class='line'><span class="n">heroku</span> <span class="ss">config</span><span class="p">:</span><span class="n">set</span> <span class="no">AWS_BUCKET</span><span class="o">=</span><span class="no">REDACTED</span>
-</span><span class='line'><span class="n">heroku</span> <span class="ss">config</span><span class="p">:</span><span class="n">set</span> <span class="no">BASE_URL</span><span class="o">=</span><span class="ss">http</span><span class="p">:</span><span class="sr">//</span><span class="n">acal</span><span class="o">.</span><span class="n">io</span><span class="o">/</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>heroku config:set <span class="nv">AWS_ACCESS_KEY_ID</span><span class="o">=</span>REDACTED
+</span><span class='line'>heroku config:set <span class="nv">AWS_SECRET_ACCESS_KEY</span><span class="o">=</span>REDACTED
+</span><span class='line'>heroku config:set <span class="nv">AWS_BUCKET</span><span class="o">=</span>REDACTED
+</span><span class='line'>heroku config:set <span class="nv">BASE_URL</span><span class="o">=</span>http://acal.io/
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Then I added redistogo and added another dyno so that sidekiq would run</p>
+<p>Then I added redistogo (free) and added another dyno so that sidekiq would run.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">heroku</span> <span class="ss">addons</span><span class="p">:</span><span class="n">add</span> <span class="n">redistogo</span>
-</span><span class='line'><span class="n">heroku</span> <span class="ss">ps</span><span class="p">:</span><span class="n">scale</span> <span class="n">worker</span><span class="o">+</span><span class="mi">1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>heroku addons:add redistogo
+</span><span class='line'>heroku ps:scale worker+1
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Finally I bought a custom domain through hover. I had to do first add a CNAME record called &#8216;www&#8217; with the target being my heroku domain.
-CNAME
-www
-example.herokuapp.com.</p>
+<p>Finally I bought a custom domain through <a href="http://www.hover.com">hover</a>, who I try to use for all my domain purchasing needs (no affiliation, they are just awesome). I had to add a CNAME record called &#8216;www&#8217; with the target being &#8216;cryptic-shore-8548&#8217;, since my heroku domain is https://cryptic-shore-8548.herokuapp.com.</p>
 
-<p>I also set up domain forwarding so that a naked url would just redirect to www. Heroku does not support naked domains out of the box. There are other solutions out there, but they cost money.</p>
+<p>I also set up domain forwarding so that a naked url (http://acal.io) would just redirect to www (http://www.acal.io). Heroku does not support naked domains out of the box. There are other solutions out there (they do cost money) but this works for now.</p>
 
-<p>I then associated the domain with my app</p>
+<p>I then associated the domain with my app and opened it up in the browser.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">heroku</span> <span class="ss">domains</span><span class="p">:</span><span class="n">add</span> <span class="n">www</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>heroku domains:add www.example.com
+</span><span class='line'>heroku open
 </span></code></pre></td></tr></table></div></figure>
 
 
-
+<p>It worked!</p>
 
 <h1>Conclusion</h1>
 
 
-<p>That seems like a lot, but it actually doesn&#8217;t take that long to do at all. It&#8217;s a great learning project for those of you just starting out as a developer. Let me know if you can actually use this to make your own URL shortener, or if there is something I missed. Best of luck!</p>
+<p>That seems like a lot of work, but it actually didn&#8217;t take me that long to do. It&#8217;s a great learning project for those of you just starting out as a developer. Let me know if you can actually use this to make your own URL shortener, or if there is something I missed. Best of luck!</p>
 </div>
 
 
