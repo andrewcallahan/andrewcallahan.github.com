@@ -106,14 +106,14 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>The next thing I do to any new rails app is to add pry to gemfile. Pry is an amazing gem that really helps me develop. If you are not sure about using pry, or how it can help you I suggest you watch this <a href="https://www.youtube.com/watch?v=D9j_Mf91M0I">talk about REPL Driven Developemnt</a> from Ruby Conf 2013.</p>
+<p>The next thing I do to any new rails app is to add pry to gemfile. Pry is an amazing gem that really helps me develop. If you are not sure about using pry, or how it can help, you I suggest you watch this <a href="https://www.youtube.com/watch?v=D9j_Mf91M0I">talk about REPL Driven Development</a> from Ruby Conf 2013.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>gem <span class="s1">&#39;pry&#39;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I knew that I wanted the app to look at least somewhat nice, so not being a designer I defaulted to using bootstrap. I download the latest copy of <a href="http://getbootstrap.com/">bootstrap</a> and unziped it.</p>
+<p>I knew that I wanted the app to look at least somewhat nice, so not being a designer I defaulted to using bootstrap. I download the latest copy of <a href="http://getbootstrap.com/">bootstrap</a> and unzipped it.</p>
 
 <p>I added the file &#8216;bootstrap.min.js&#8217; to the folder vendor/assets/javascripts. Then modified application.js to indicate this</p>
 
@@ -157,7 +157,7 @@
 
 <p>Now that I had my model in place, I still needed to actually generate a short link for each URL that I pasted in.</p>
 
-<p>I made a method &#8216;generate_slug&#8217;, which creates the short part of the link after the base url. All this method does is take the unique id for a link, and converts it into it&#8217;s base 26 equivilant. Base 36 allows really large numbers to be shown in just a few characters. For example the 1 Billionth link in the database will have a slug of &#8220;gjdgxs&#8221; - just 6 characters as opposed to the 10 characters in the number&#8217;s ID (1,000,000,000).</p>
+<p>I made a method &#8216;generate_slug&#8217;, which creates the short part of the link after the base url. All this method does is take the unique id for a link, and converts it into it&#8217;s Base 36 equivalent. Base 36 allows really large numbers to be shown in just a few characters. For example the 1 Billionth link in the database will have a slug of &#8220;gjdgxs&#8221; - just 6 characters as opposed to the 10 characters in the number&#8217;s ID (1,000,000,000).</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -503,7 +503,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I also wanted a page that just listed all the links created as a table, so first made a rotue</p>
+<p>I also wanted a page that just listed all the links created as a table, so first made a route.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="n">get</span> <span class="s1">&#39;/all&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;home#all&#39;</span>
@@ -589,7 +589,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I then modified the link form partial &#8216;links/_form&#8217;. I wanted to make this submit asyncronously so added a remote:true option to the form. I also added a logo, some placeholder text, and some bootstrap styling.</p>
+<p>I then modified the link form partial &#8216;links/_form&#8217;. I wanted to make this submit asynchronously so added a remote:true option to the form. I also added a logo, some placeholder text, and some bootstrap styling.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -641,7 +641,7 @@
 <p>I then wanted to append the short link result back onto the page once it was processed. I referred to this earlier in the post when I was making the links controller. In order to do this I made a new file called create.js.erb in the &#8216;views/links&#8217; folder.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='erb'><span class='line'><span class="x">$(&#39;.result&#39;).append(&#39;&lt;p class=&quot;short_url&quot;&gt;Your Shortend Link: </span><span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="vi">@link</span><span class="o">.</span><span class="n">display_slug</span><span class="p">,</span> <span class="vi">@link</span><span class="o">.</span><span class="n">slug</span><span class="p">,</span> <span class="ss">target</span><span class="p">:</span> <span class="s2">&quot;_blank&quot;</span> <span class="cp">%&gt;</span><span class="x">&lt;/p&gt;&#39;)</span>
+</pre></td><td class='code'><pre><code class='erb'><span class='line'><span class="x">$(&#39;.result&#39;).append(&#39;&lt;p class=&quot;short_url&quot;&gt;Your Shortened Link: </span><span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="vi">@link</span><span class="o">.</span><span class="n">display_slug</span><span class="p">,</span> <span class="vi">@link</span><span class="o">.</span><span class="n">slug</span><span class="p">,</span> <span class="ss">target</span><span class="p">:</span> <span class="s2">&quot;_blank&quot;</span> <span class="cp">%&gt;</span><span class="x">&lt;/p&gt;&#39;)</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -696,7 +696,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I then made the actual javascript validation that required both the presence of a url, and it&#8217;s validity according to a regex.</p>
+<p>I then made the actual javascript validation that required both the presence of a URL, and it&#8217;s validity as a URL according to a regular expression.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1163,7 +1163,7 @@
 <h1>Deploying to Heroku</h1>
 
 
-<p>Heroku makes deploying rails apps incredibly easy, and I use it for all my side projects. I first had to add the &#8216;rails_12factor&#8217; gem and a line indicating that I was using ruby 2.0.0. In order to get sidekiq to work I had to use unicorn, so included the &#8216;unicorn&#8217; gem too.</p>
+<p>Heroku makes deploying rails apps incredibly easy, and I use it for all my side projects. I first had to add the &#8216;rails_12factor&#8217; gem and a line indicating that I was using ruby 2.0.0. In order to get SideKiq to work I had to use unicorn, so included the &#8216;unicorn&#8217; gem too.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1204,7 +1204,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I then made a Procfile, which is all Heroku needs to run redis and SideKiq for your application automatically.</p>
+<p>I then made a Procfile, which is all Heroku needs to run redis and SideKiq for your application automatically. I put it in the base directory (same place as the gemfile).</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1286,7 +1286,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Then I added redistogo (free) and added another dyno so that sidekiq would run.</p>
+<p>Then I added redistogo (free) and added another dyno so that SideKiq would run.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
